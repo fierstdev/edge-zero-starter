@@ -5,9 +5,14 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
   },
-  auth: true,
+  auth: {
+    useAPIKey: true,
+  },
   fields: [
-    // Email added by default
-    // Add more fields as needed
+    // Store the GitHub installation ID so we can act on behalf of the user
+    {
+      name: 'githubInstallationId',
+      type: 'number',
+    },
   ],
 }

@@ -1,18 +1,35 @@
 import type { ActionLink, MediaAsset, IconAsset, RichTextAsset, Alignment, Spacing, Badge } from './atoms';
 
-export type BlockType = 
-  | 'HeroBlock' 
-  | 'FeatureGridBlock' 
-  | 'ContentBlock' 
-  | 'AccordionBlock' 
-  | 'TestimonialBlock' 
-  | 'CallToActionBlock'
-  | 'LogoCloudBlock'
-  | 'PricingBlock'
-  | 'ContactBlock'
-  | 'ServicesBlock'
-  | 'ValuePropositionBlock'
-  | 'AboutBlock'
+/* 
+ * The Block Registry Pattern
+ * 
+ * To extend Edge Zero with your own custom blocks, or to activate Pro blocks, 
+ * you can use TypeScript's module augmentation feature in your own project.
+ * 
+ * Example:
+ * declare module '@edge-zero/types' {
+ *   interface BlockRegistry {
+ *     MyCustomBlock: MyCustomBlock;
+ *   }
+ * }
+ */
+export interface BlockRegistry {
+  HeroBlock: HeroBlock;
+  FeatureGridBlock: FeatureGridBlock;
+  ContentBlock: ContentBlock;
+  AccordionBlock: AccordionBlock;
+  TestimonialBlock: TestimonialBlock;
+  CallToActionBlock: CallToActionBlock;
+  LogoCloudBlock: LogoCloudBlock;
+  PricingBlock: PricingBlock;
+  ContactBlock: ContactBlock;
+  ServicesBlock: ServicesBlock;
+  ValuePropositionBlock: ValuePropositionBlock;
+  AboutBlock: AboutBlock;
+  
+}
+
+export type BlockType = keyof BlockRegistry;
 
 export interface BaseBlock {
   id: string; // Unique Payload ID
@@ -166,17 +183,5 @@ export interface AboutBlock extends BaseBlock {
 }
 
 
-// The Master Union Type
-export type PageBlock = 
-  | HeroBlock 
-  | FeatureGridBlock 
-  | ContentBlock 
-  | AccordionBlock 
-  | TestimonialBlock 
-  | CallToActionBlock 
-  | LogoCloudBlock 
-  | PricingBlock
-  | ContactBlock
-  | ServicesBlock
-  | ValuePropositionBlock
-  | AboutBlock
+// The Master Union Type (derived from Registry)
+export type PageBlock = BlockRegistry[keyof BlockRegistry];

@@ -1,0 +1,25 @@
+{
+  "name": "@edge-zero/cli",
+  "version": "1.0.0",
+  "description": "The Edge Zero CLI for scaffolding premium UI blocks",
+  "type": "module",
+  "bin": {
+    "edge-zero": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "cac": "^6.7.14",
+    "conf": "^12.0.0",
+    "open": "^11.0.0",
+    "picocolors": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.0.0"
+  }
+}
