@@ -1,0 +1,58 @@
+---
+import type { AboutBlock as AboutPayload } from '@edge-zero/types';
+import { resolveMediaUrl } from '../../../lib/media';
+import { convertLexicalToHTML, defaultHTMLConverters } from '@payloadcms/richtext-lexical/html';
+
+interface Props {
+  block: AboutPayload;
+}
+
+const { block } = Astro.props;
+
+// Default to right positioning if not specified
+const isMediaRight = block.mediaPosition !== 'right';
+const flexLayoutClass = isMediaRight ? 'lg:flex-row' : 'lg:flex-row-reverse';
+
+const renderRichText = (blockData: any) => {
+  // Try pre-rendered HTML first (if Payload starts generating it)
+  if (blockData.content_html) return blockData.content_html;
+  if (typeof blockData.content === 'string') return blockData.content;
+  if (blockData.content && blockData.content.html) return blockData.content.html;
+  
+  // Natively convert Payload v3 Lexical AST on the Astro Node server
+  try {
+    if (blockData.content && typeof blockData.content === 'object') {
+       return convertLexicalToHTML({ converters: defaultHTMLConverters, data: blockData.content });
+    }
+  } catch (err) {
+    console.error("Lexical parsing error", err);
+  }
+
+  // Absolute fallback
+  return `<p class="py-6">${JSON.stringify(blockData.content)}</p>`;
+};
+
+const renderedContent = renderRichText(block);
+---
+
+<section 
+  id={block.anchorId || block.id} 
+  data-theme={block.themeOverride} 
+  class="w-full"
+>
+  <div class="hero bg-base-200 min-h-[50vh] py-16">
+    <div class={`hero-content flex-col ${flexLayoutClass} gap-8 lg:gap-16 max-w-7xl mx-auto w-full`}>
+      {block.media && (
+        <img
+          src={resolveMediaUrl(block.media.url)}
+          alt={block.heading}
+          class="max-w-sm md:max-w-md rounded-lg shadow-2xl object-cover aspect-square w-full"
+        />
+      )}
+      <div class="w-full">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">{block.heading}</h2>
+        <div class="prose prose-lg text-base-content/80 max-w-none" set:html={renderedContent} />
+      </div>
+    </div>
+  </div>
+</section>

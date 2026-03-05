@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.astro/
+
+# Environments (CRITICAL FOR SECURITY)
+.env
+.env.*
+!.env.example
+!.env.template
+
+# Databases (CRITICAL FOR SECURITY)
+*.db
+*.sqlite
+*.sqlite3
+apps/backend/payload.db
+
+# OS & Temp
+.DS_Store
+Thumbs.db
+.cache/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Proprietary/Private apps
+apps/mcp-server/

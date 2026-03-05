@@ -1,0 +1,158 @@
+[
+  {
+    "id": "page_home_001",
+    "slug": "home",
+    "title": "Home",
+    "status": "published",
+    "publishedAt": "2026-02-28T00:00:00.000Z",
+    "themeOverride": "corporate",
+    "seo": {
+      "title": "Edge Zero | High-Performance Web Architecture",
+      "description": "The proprietary factory approach to building edge-native applications.",
+      "noIndex": false,
+      "noFollow": false
+    },
+    "blocks": [
+      {
+        "id": "hero_1",
+        "blockType": "HeroBlock",
+        "paddingTop": "xl",
+        "paddingBottom": "xl",
+        "alignment": "center",
+        "heading": "The Edge-Native Factory",
+        "subheading": "Decoupled architecture for agencies that demand scale, speed, and standard design systems.",
+        "actions": [
+          {
+            "id": "action_1",
+            "label": "Deploy Edge Zero",
+            "url": "#features",
+            "target": "_self",
+            "style": "primary",
+            "size": "lg"
+          }
+        ]
+      },
+      {
+        "id": "features_1",
+        "blockType": "FeatureGridBlock",
+        "anchorId": "features",
+        "paddingTop": "lg",
+        "paddingBottom": "lg",
+        "alignment": "center",
+        "columns": 3,
+        "heading": "Building Strong Foundations",
+        "features": [
+          {
+            "id": "feat_1",
+            "title": "Cloudflare R2 & D1",
+            "description": "Fully edge-compatible storage and relational data out of the box."
+          },
+          {
+            "id": "feat_2",
+            "title": "Astro + DaisyUI v5",
+            "description": "Zero JS by default, strictly typed CSS semantic variables."
+          },
+          {
+            "id": "feat_3",
+            "title": "Strict JSON Contracts",
+            "description": "Frontend and backend communicate through immutable TypeScript interfaces."
+          }
+        ]
+      },
+      {
+        "id": "services_1",
+        "blockType": "ServicesBlock",
+        "paddingTop": "xl",
+        "paddingBottom": "lg",
+        "heading": "Our Services",
+        "subheading": "Comprehensive edge-native solutions to elevate your digital presence.",
+        "services": [
+          {
+            "id": "serv_1",
+            "title": "Web Development",
+            "description": "Lightning fast Astro sites deployed flawlessly to the edge.",
+            "media": {
+              "id": "media_3",
+              "url": "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
+              "altText": "Web Development"
+            },
+            "price": "Starting at $5k",
+            "link": {
+              "id": "sl_1",
+              "label": "Learn More",
+              "url": "/services/web",
+              "target": "_self",
+              "style": "primary"
+            }
+          },
+          {
+            "id": "serv_2",
+            "title": "Custom APIs",
+            "description": "Robust, type-safe APIs powered by Cloudflare Workers and Payload CMS.",
+            "icon": {
+              "type": "image",
+              "value": "https://img.daisyui.com/images/stock/photo-1572635148818-ef6fd45eb394.webp"
+            },
+            "price": "Custom Pricing"
+          },
+          {
+            "id": "serv_3",
+            "title": "SEO Optimization",
+            "description": "Technical SEO strategies to rank higher and load faster worldwide.",
+            "media": {
+              "id": "media_4",
+              "url": "https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp",
+              "altText": "SEO"
+            }
+          }
+        ]
+      },
+      {
+        "id": "testimonials_1",
+        "blockType": "TestimonialBlock",
+        "layout": "grid",
+        "heading": "What Our Customers Say",
+        "paddingTop": "lg",
+        "paddingBottom": "xl",
+        "testimonials": [
+          {
+            "id": "test_1",
+            "quote": "Edge Zero cut our deployment times in half. The strict JSON contracts mean our backend and frontend teams never step on each other's toes.",
+            "authorName": "Sarah Jenkins",
+            "authorRole": "CTO",
+            "authorCompany": "Nexus Digital",
+            "rating": 5
+          },
+          {
+            "id": "test_2",
+            "quote": "The Tailwind v4 and DaisyUI 5 integration is flawless. We hand over white-labeled CMS dashboards to our clients and the frontend just works.",
+            "authorName": "Marcus Chen",
+            "authorRole": "Lead Developer",
+            "authorCompany": "Foundry Web Works",
+            "rating": 5
+          },
+          {
+            "id": "test_3",
+            "quote": "The Tailwind v4 and DaisyUI 5 integration is flawless. We hand over white-labeled CMS dashboards to our clients and the frontend just works.",
+            "authorName": "Maria Martinez",
+            "authorRole": "Lead Designer",
+            "authorCompany": "Figma",
+            "rating": 5
+          }
+        ]
+      },
+      {
+        "id": "contact_1",
+        "blockType": "ContactBlock",
+        "paddingTop": "xl",
+        "paddingBottom": "xl",
+        "heading": "Get in Touch",
+        "subheading": "We're here to help and answer any question you might have. We look forward to hearing from you.",
+        "email": "hello@edgezero.dev",
+        "phone": "+1 (555) 123-4567",
+        "address": "123 Edge Way\nSuite 100\nSan Francisco, CA 94107",
+        "showForm": true
+      }
+    ]
+  }
+]

@@ -1,0 +1,58 @@
+name: Sync Public Starter Repo
+
+on:
+  push:
+    branches:
+      - main # Triggers every time you push to your private main branch
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Master
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PUBLIC_REPO_PAT }}
+          path: master-repo
+
+      - name: Checkout Public Starter
+        uses: actions/checkout@v4
+        with:
+          repository: fierstdev/edge-zero-starter
+          token: ${{ secrets.PUBLIC_REPO_PAT }}
+          path: public-starter
+
+      - name: Sanitize and Copy Files
+        run: |
+          # Clear out the old public repo
+          find public-starter -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+
+          # Copy the master repo, excluding proprietary IP and ALL 'pro' directories
+          rsync -a --exclude='.git' \
+                   --exclude='apps/mcp-server' \
+                   --exclude='**/pro/' \
+                   --exclude='docs/internal' \
+                   master-repo/ public-starter/
+
+          # Rewrite pnpm-workspace.yaml to remove the mcp-server
+          # If pnpm looks for a workspace that doesn't exist, it will throw an error
+          sed -i '/mcp-server/d' public-starter/pnpm-workspace.yaml
+
+          # Strip Pro references from core files using comment markers
+          find public-starter -type f \( -name "*.ts" -o -name "*.astro" \) -exec sed -i '/\/\/ START-PRO/,/\/\/ END-PRO/d' {} +
+
+      - name: Commit and Push to Public Starter
+        working-directory: public-starter
+        run: |
+          git config user.name "Edge Zero Automaton"
+          git config user.email "bot@edge-zero.dev"
+
+          git add .
+
+          # Only commit and push if there are actual changes
+          if ! git diff --staged --quiet; then
+            git commit -m "Automated sync from private master [skip ci]"
+            git push origin main
+          else
+            echo "No changes to sync."
+          fi

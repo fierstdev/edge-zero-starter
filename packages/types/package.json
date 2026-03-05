@@ -1,0 +1,15 @@
+{
+  "name": "@edge-zero/types",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FierstDev shared TypeScript contract for Edge Zero",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

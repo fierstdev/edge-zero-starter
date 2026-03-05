@@ -1,0 +1,74 @@
+/* 1. Import the Tailwind v4 engine */
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+
+/* 2. Define custom Tailwind variables */
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-heading: "Inter", sans-serif;
+}
+
+/* 3. Initialize DaisyUI v5 and register the base themes */
+@plugin "daisyui" {
+  themes: all;
+}
+
+/* 4. Define the custom FierstDev 'agency-default' theme */
+@plugin "daisyui/theme" {
+  name: "agency-default";
+  default: true;
+  color-scheme: light;
+  
+  /* Background & Text Pairings */
+  --color-base-100: #ffffff;
+  --color-base-200: #f3f4f6;
+  --color-base-300: #e5e7eb;
+  --color-base-content: #1f2937;
+  
+  /* Brand Colors & Content Pairings */
+  --color-primary: #2563eb;
+  --color-primary-content: #ffffff;
+  
+  --color-secondary: #4f46e5;
+  --color-secondary-content: #ffffff;
+  
+  --color-accent: #f59e0b;
+  --color-accent-content: #ffffff;
+  
+  --color-neutral: #1f2937;
+  --color-neutral-content: #ffffff;
+  
+  /* State Colors & Content Pairings */
+  --color-info: #3b82f6;
+  --color-info-content: #ffffff;
+  
+  --color-success: #22c55e;
+  --color-success-content: #ffffff;
+  
+  --color-warning: #eab308;
+  --color-warning-content: #1f2937;
+  
+  --color-error: #ef4444;
+  --color-error-content: #ffffff;
+}
+
+/* Edge Zero Strict Policy:
+  Custom CSS is strictly prohibited here unless it is a global, unavoidable reset. 
+  Rely entirely on Tailwind v4 utility classes and DaisyUI semantic variables.
+*/
+
+html {
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Smooth transitions when the CMS swaps a data-theme attribute */
+body {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}

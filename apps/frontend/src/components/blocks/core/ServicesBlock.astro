@@ -1,0 +1,85 @@
+---
+import type { ServicesBlock as ServicesPayload } from '@edge-zero/types';
+import { resolveMediaUrl } from 'src/lib/media';
+
+interface Props {
+  block: ServicesPayload;
+}
+
+const { block } = Astro.props;
+
+const paddingClass = block.paddingTop === 'xl' ? 'pt-32 pb-32' : 'py-16';
+---
+
+<section 
+  id={block.anchorId || block.id} 
+  data-theme={block.themeOverride} 
+  class={`w-full bg-base-100 ${paddingClass}`}
+>
+  <div class="container mx-auto px-4">
+    {(block.heading || block.subheading) && (
+      <div class="text-center mb-16 max-w-3xl mx-auto">
+        {block.heading && (
+          <h2 class="text-4xl md:text-5xl font-bold text-base-content mb-6">{block.heading}</h2>
+        )}
+        {block.subheading && (
+          <p class="text-xl text-base-content/80">{block.subheading}</p>
+        )}
+      </div>
+    )}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-auto gap-8 max-w-7xl mx-auto">
+      {block.services.map((service) => (
+        <div class="card bg-base-200 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+          {service.media && (
+            <figure class="aspect-video w-full overflow-hidden bg-base-300">
+              <img 
+                src={resolveMediaUrl(service.media.url)} 
+                alt={service.title} 
+                class="w-full h-full object-cover"
+              />
+            </figure>
+          )}
+          <div class="card-body">
+            {service.icon && !service.media && (
+              <div class="mb-4">
+                {service.icon.type === 'image' ? (
+                  <img src={resolveMediaUrl(service.icon.value)} alt="" class="w-16 h-16 rounded-xl object-cover shadow-sm" />
+                ) : (
+                  <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    {service.icon.type === 'lucide' ? (
+                      <i data-lucide={service.icon.value} class="w-6 h-6"></i>
+                    ) : (
+                      <div set:html={service.icon.value} class="w-6 h-6 [&>svg]:w-full [&>svg]:h-full" />
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <h3 class="card-title text-2xl font-bold flex items-start justify-between gap-2">
+              <span class="leading-tight">{service.title}</span>
+              {service.price && (
+                <span class="badge badge-primary badge-outline shrink-0 mt-1 whitespace-nowrap">{service.price}</span>
+              )}
+            </h3>
+            
+            <p class="text-base-content/70 mt-4 mb-6">{service.description}</p>
+            
+            {service.link && (
+              <div class="card-actions justify-start mt-auto">
+                <a 
+                  href={service.link.url} 
+                  target={service.link.target} 
+                  class={`btn btn-${service.link.style || 'primary'} ${service.link.size ? `btn-${service.link.size}` : ''}`}
+                >
+                  {service.link.label}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

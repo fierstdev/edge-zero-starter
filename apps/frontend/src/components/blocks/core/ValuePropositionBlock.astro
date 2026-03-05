@@ -1,0 +1,60 @@
+---
+import type { ValuePropositionBlock as ValuePropositionPayload } from '@edge-zero/types';
+import { resolveMediaUrl } from 'src/lib/media';
+
+interface Props {
+  block: ValuePropositionPayload;
+}
+
+const { block } = Astro.props;
+---
+
+<section id={block.anchorId || block.id} class="w-full bg-base-100 py-20 relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-50"></div>
+  <div class="container mx-auto px-4 max-w-7xl relative z-10">
+    
+    <div class="mb-16 text-center max-w-3xl mx-auto">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-base-content tracking-tight">
+        {block.heading}
+      </h2>
+      {block.subheading && (
+        <p class="text-xl text-base-content/70 mt-6 font-medium">
+          {block.subheading}
+        </p>
+      )}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {block.propositions?.map((prop, idx) => (
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:border-primary/20 transition-all duration-300 transform hover:-translate-y-1">
+          <div class="card-body">
+            <div class="flex flex-col mb-4">
+              {prop.icon ? (
+                <div class="mb-6">
+                  {prop.icon.type === 'image' ? (
+                    <img src={resolveMediaUrl(prop.icon.value)} alt="" class="w-14 h-14 rounded-2xl object-cover shadow-sm" />
+                  ) : (
+                    <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-inner">
+                      {prop.icon.type === 'lucide' ? (
+                        <i data-lucide={prop.icon.value} class="w-8 h-8"></i>
+                      ) : (
+                        <div set:html={prop.icon.value} class="w-8 h-8 [&>svg]:w-full [&>svg]:h-full" />
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-2xl font-black mb-6 shadow-inner">
+                  {idx + 1}
+                </div>
+              )}
+              <h3 class="card-title text-2xl font-bold text-base-content">{prop.title}</h3>
+            </div>
+            <p class="text-base-content/70 text-lg leading-relaxed">{prop.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+    
+  </div>
+</section>
