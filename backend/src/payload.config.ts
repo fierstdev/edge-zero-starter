@@ -16,7 +16,6 @@ import { Identity } from './globals/Identity'
 import { Header } from './globals/Header'
 import { Theme } from './globals/Theme'
 import { Footer } from './globals/Footer'
-import { Licenses } from './collections/Licenses'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -32,7 +31,6 @@ export default buildConfig({
     Users,
     Pages,
     Media,
-    Licenses
   ],
   globals: [
     Identity,

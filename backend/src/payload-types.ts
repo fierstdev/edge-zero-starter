@@ -70,7 +70,6 @@ export interface Config {
     users: User;
     pages: Page;
     media: Media;
-    licenses: License;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -81,7 +80,6 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    licenses: LicensesSelect<false> | LicensesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -137,12 +135,8 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
-  githubInstallationId?: number | null;
   updatedAt: string;
   createdAt: string;
-  enableAPIKey?: boolean | null;
-  apiKey?: string | null;
-  apiKeyIndex?: string | null;
   email: string;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
@@ -179,8 +173,6 @@ export interface Page {
     | ContactBlockType
     | ValuePropositionBlockType
     | AboutBlockType
-    | ServiceAreaBlockType
-    | QuoteFunnelBlockType
   )[];
   /**
    * The URL path. Use "home" for the root index (/).
@@ -842,189 +834,6 @@ export interface AboutBlockType {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ServiceAreaBlockType".
- */
-export interface ServiceAreaBlockType {
-  /**
-   * Choose the visual layout for the service area section.
-   */
-  variant?: 'standard' | null;
-  heading: string;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  /**
-   * Provide a Google Maps Embed URL (e.g., https://www.google.com/maps/embed?pb=...).
-   */
-  mapEmbedUrl: string;
-  /**
-   * Optional. Define a unique ID for this block to enable deep-linking (e.g., entering "services" here allows linking to "#services"). Do not include the # symbol.
-   */
-  anchorId?: string | null;
-  /**
-   * Optional DaisyUI theme specifically for this section.
-   */
-  themeOverride?:
-    | (
-        | 'agency-default'
-        | 'light'
-        | 'cupcake'
-        | 'bumblebee'
-        | 'emerald'
-        | 'corporate'
-        | 'retro'
-        | 'cyberpunk'
-        | 'valentine'
-        | 'garden'
-        | 'aqua'
-        | 'lofi'
-        | 'pastel'
-        | 'fantasy'
-        | 'wireframe'
-        | 'cmyk'
-        | 'autumn'
-        | 'acid'
-        | 'lemonade'
-        | 'winter'
-        | 'nord'
-        | 'dark'
-        | 'synthwave'
-        | 'halloween'
-        | 'forest'
-        | 'black'
-        | 'luxury'
-        | 'dracula'
-        | 'business'
-        | 'night'
-        | 'coffee'
-        | 'dim'
-        | 'sunset'
-      )
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'ServiceAreaBlock';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "QuoteFunnelBlockType".
- */
-export interface QuoteFunnelBlockType {
-  /**
-   * Choose the visual layout for this quote funnel.
-   */
-  variant?: 'standard' | null;
-  heading: string;
-  subheading?: string | null;
-  steps: {
-    question: string;
-    fieldType: 'text' | 'email' | 'number' | 'select' | 'radio';
-    options?:
-      | {
-          label: string;
-          value: string;
-          id?: string | null;
-        }[]
-      | null;
-    id?: string | null;
-  }[];
-  /**
-   * Message to show after the user successfully completes the funnel.
-   */
-  successMessage?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Optional webhook URL to submit the lead data to (e.g. Zapier or Make.com).
-   */
-  webhookUrl?: string | null;
-  /**
-   * Optional. Define a unique ID for this block to enable deep-linking (e.g., entering "services" here allows linking to "#services"). Do not include the # symbol.
-   */
-  anchorId?: string | null;
-  /**
-   * Optional DaisyUI theme specifically for this section.
-   */
-  themeOverride?:
-    | (
-        | 'agency-default'
-        | 'light'
-        | 'cupcake'
-        | 'bumblebee'
-        | 'emerald'
-        | 'corporate'
-        | 'retro'
-        | 'cyberpunk'
-        | 'valentine'
-        | 'garden'
-        | 'aqua'
-        | 'lofi'
-        | 'pastel'
-        | 'fantasy'
-        | 'wireframe'
-        | 'cmyk'
-        | 'autumn'
-        | 'acid'
-        | 'lemonade'
-        | 'winter'
-        | 'nord'
-        | 'dark'
-        | 'synthwave'
-        | 'halloween'
-        | 'forest'
-        | 'black'
-        | 'luxury'
-        | 'dracula'
-        | 'business'
-        | 'night'
-        | 'coffee'
-        | 'dim'
-        | 'sunset'
-      )
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'QuoteFunnelBlock';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "licenses".
- */
-export interface License {
-  id: number;
-  email: string;
-  licenseKey: string;
-  status: 'active' | 'expired';
-  lemonSqueezyCustomerId?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1058,10 +867,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
-      } | null)
-    | ({
-        relationTo: 'licenses';
-        value: number | License;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1110,12 +915,8 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  githubInstallationId?: T;
   updatedAt?: T;
   createdAt?: T;
-  enableAPIKey?: T;
-  apiKey?: T;
-  apiKeyIndex?: T;
   email?: T;
   resetPasswordToken?: T;
   resetPasswordExpiration?: T;
@@ -1148,8 +949,6 @@ export interface PagesSelect<T extends boolean = true> {
         ContactBlock?: T | ContactBlockTypeSelect<T>;
         ValuePropositionBlock?: T | ValuePropositionBlockTypeSelect<T>;
         AboutBlock?: T | AboutBlockTypeSelect<T>;
-        ServiceAreaBlock?: T | ServiceAreaBlockTypeSelect<T>;
-        QuoteFunnelBlock?: T | QuoteFunnelBlockTypeSelect<T>;
       };
   slug?: T;
   seo?:
@@ -1401,49 +1200,6 @@ export interface AboutBlockTypeSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ServiceAreaBlockType_select".
- */
-export interface ServiceAreaBlockTypeSelect<T extends boolean = true> {
-  variant?: T;
-  heading?: T;
-  content?: T;
-  mapEmbedUrl?: T;
-  anchorId?: T;
-  themeOverride?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "QuoteFunnelBlockType_select".
- */
-export interface QuoteFunnelBlockTypeSelect<T extends boolean = true> {
-  variant?: T;
-  heading?: T;
-  subheading?: T;
-  steps?:
-    | T
-    | {
-        question?: T;
-        fieldType?: T;
-        options?:
-          | T
-          | {
-              label?: T;
-              value?: T;
-              id?: T;
-            };
-        id?: T;
-      };
-  successMessage?: T;
-  webhookUrl?: T;
-  anchorId?: T;
-  themeOverride?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -1462,18 +1218,6 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "licenses_select".
- */
-export interface LicensesSelect<T extends boolean = true> {
-  email?: T;
-  licenseKey?: T;
-  status?: T;
-  lemonSqueezyCustomerId?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

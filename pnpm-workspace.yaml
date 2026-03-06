@@ -1,6 +1,3 @@
-  - apps/*
-
-onlyBuiltDependencies:
-  - esbuild
-  - sharp
-  - workerd
+packages:
+  - backend
+  - frontend

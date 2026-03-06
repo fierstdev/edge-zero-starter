@@ -9,6 +9,7 @@ import { ServicesBlock } from '@/blocks/core/Services/schema'
 import { ContactBlock } from '@/blocks/conversion/Contact/schema'
 import { ValuePropositionBlock } from '@/blocks/core/ValueProposition/schema'
 import { AboutBlock } from '@/blocks/core/About/schema'
+// Future blocks get registered here
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
