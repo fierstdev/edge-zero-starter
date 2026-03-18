@@ -1,0 +1,39 @@
+---
+import { BlockMap as StarterBlockMap } from './blocks/generated/index.js';
+
+interface Props {
+  blocks: any[];
+}
+
+const { blocks = [] } = Astro.props;
+const enableProBlocks = import.meta.env.PUBLIC_EDGE_ZERO_ENABLE_PRO === 'true';
+
+let proBlockMap: Record<string, any> = {};
+
+if (enableProBlocks) {
+  try {
+    ({ BlockMap: proBlockMap } = await import('../../../../pro/www/src/components/blocks/generated/index'));
+  } catch (error) {
+    console.warn('Edge Zero starter/www could not load Pro blocks for development.', error);
+  }
+}
+
+const BlockMap = {
+  ...StarterBlockMap,
+  ...proBlockMap,
+};
+---
+
+{blocks.map((block, blockIndex) => {
+  const BlockComponent = BlockMap[block.blockType];
+
+  if (!BlockComponent) {
+    return (
+      <section class="py-12 text-center bg-error/10 text-error">
+        <p class="font-mono text-sm">Missing Component: {block.blockType}</p>
+      </section>
+    );
+  }
+
+  return <BlockComponent {...block} blockIndex={blockIndex} />;
+})}

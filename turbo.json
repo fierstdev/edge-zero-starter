@@ -1,6 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "project": "edge-zero",
+  "globalEnv": [
+    "EDGE_ZERO_ENABLE_PRO",
+    "PUBLIC_EDGE_ZERO_ENABLE_PRO"
+  ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {
     "build": {

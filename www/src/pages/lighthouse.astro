@@ -1,0 +1,60 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const globals = {
+  theme: null,
+  header: null,
+  identity: null,
+  footer: null,
+};
+---
+
+<Layout
+  seo={{
+    title: 'Edge Zero Lighthouse Baseline',
+    description: 'Deterministic Lighthouse audit surface for Edge Zero starter.',
+  }}
+  globals={globals}
+>
+  <main class="px-4 py-14 sm:py-18">
+    <section class="mx-auto max-w-6xl">
+      <div class="hero rounded-box border border-base-300 bg-base-200/40 shadow-sm">
+        <div class="hero-content py-14 text-center">
+          <div class="max-w-3xl space-y-5">
+            <span class="badge badge-soft badge-primary">Lighthouse Benchmark</span>
+            <h1 class="text-4xl font-black tracking-tight sm:text-5xl">Edge Zero Performance Harness</h1>
+            <p class="text-base text-base-content/70 sm:text-lg">
+              This route is a stable reference page used to catch performance regressions in CI before they reach
+              production.
+            </p>
+            <div class="flex flex-col justify-center gap-3 sm:flex-row">
+              <a href="#" class="btn btn-primary">Primary Action</a>
+              <a href="#" class="btn btn-outline">Secondary Action</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto mt-10 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <article class="card card-border bg-base-100 shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title text-xl">Fast by default</h2>
+          <p class="text-sm text-base-content/70">Server rendering plus lean component output keeps runtime overhead low.</p>
+        </div>
+      </article>
+      <article class="card card-border bg-base-100 shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title text-xl">Accessible structure</h2>
+          <p class="text-sm text-base-content/70">Heading order, contrast, and semantics are checked alongside performance.</p>
+        </div>
+      </article>
+      <article class="card card-border bg-base-100 shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title text-xl">Stable visual layout</h2>
+          <p class="text-sm text-base-content/70">Media sizing and loading strategy target low CLS and strong LCP.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+</Layout>

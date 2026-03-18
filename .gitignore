@@ -9,6 +9,7 @@ build/
 out/
 .next/
 .astro/
+.turbo/
 
 # Environments (CRITICAL FOR SECURITY)
 .env

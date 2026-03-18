@@ -1,0 +1,44 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+import { fetchGlobalBundle, fetchPageBySlug } from '../lib/cms';
+
+// 3. Dynamic Routing Map
+// If the user is at the root URL ("/"), slug is undefined. Map that to "home".
+const { slug } = Astro.params;
+const querySlug = slug || 'home'; 
+
+const assetLikePath = querySlug.split('/').pop() || '';
+const isStaticAssetRequest = /\.[a-z0-9]+$/i.test(assetLikePath);
+
+if (isStaticAssetRequest) {
+  return new Response(null, { status: 404 });
+}
+
+if (!import.meta.env.DEV) {
+  Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=300');
+}
+
+const [pageData, globalBundle] = await Promise.all([
+  fetchPageBySlug(querySlug),
+  fetchGlobalBundle(),
+]);
+
+// 4. Handle 404s
+if (!pageData) {
+  return Astro.redirect('/404');
+}
+
+const { title, seo, blocks, themeOverride } = pageData;
+---
+
+<Layout 
+  seo={seo || { title }} 
+  themeOverride={themeOverride}
+  globals={globalBundle}
+>
+  <main>
+    <h1 class="sr-only">{seo?.title || title}</h1>
+    <BlockRenderer blocks={blocks} />
+  </main>
+</Layout>

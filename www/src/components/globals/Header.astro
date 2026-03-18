@@ -1,0 +1,160 @@
+---
+import type { GlobalHeader, SiteIdentity } from '@edge-zero/types';
+import { fetchGlobal, resolveCmsUrl } from '../../lib/cms';
+
+interface Props {
+  headerData?: GlobalHeader | null;
+  identityData?: SiteIdentity | null;
+}
+
+const { headerData: providedHeaderData, identityData: providedIdentityData } = Astro.props as Props;
+const shouldFetchGlobals = providedHeaderData === undefined || providedIdentityData === undefined;
+
+const [headerData, identityData] = shouldFetchGlobals
+  ? await Promise.all([
+      fetchGlobal<GlobalHeader>('header'),
+      fetchGlobal<SiteIdentity>('identity'),
+    ])
+  : [providedHeaderData ?? null, providedIdentityData ?? null];
+
+// Fallbacks for the factory floor
+const navItems = headerData?.navigation || [];
+const cta = headerData?.callToAction;
+const isSticky = headerData?.isSticky ?? true;
+const theme = headerData?.themeOverride;
+
+const siteName = identityData?.siteName || 'Edge Zero';
+const rawLogoUrl = identityData?.logoLight?.url; 
+const logoUrl = resolveCmsUrl(rawLogoUrl);
+const logoWidth = identityData?.logoLight?.width || undefined;
+const logoHeight = identityData?.logoLight?.height || undefined;
+
+const getItemLabel = (item: any) => {
+  const label = String(item?.label || '').trim();
+  if (label) return label;
+  const url = String(item?.url || '').trim();
+  return url || 'Navigation item';
+};
+
+const getItemTarget = (item: any) => (item?.target === '_blank' ? '_blank' : undefined);
+const getItemRel = (item: any) => (item?.target === '_blank' ? 'noreferrer noopener' : undefined);
+---
+
+{/* The sticky class keeps the navbar pinned to the top as the user scrolls */}
+<header 
+  class:list={[
+    "navbar bg-base-100 shadow-sm w-full transition-all duration-300",
+    { "sticky top-0 z-50": isSticky }
+  ]}
+  data-theme={theme}
+>
+  {/* LEFT: Logo & Mobile Menu */}
+  <div class="navbar-start">
+    <div class="dropdown">
+      <button type="button" class="btn btn-ghost lg:hidden" aria-label="Open navigation menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+      </button>
+      <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+        {navItems.map((item: any) => (
+          <li>
+            {item.children && item.children.length > 0 ? (
+              <details>
+                <summary>{getItemLabel(item)}</summary>
+                <ul class="p-2">
+                  {item.children.map((child: any) => (
+                    <li>
+                      <a
+                        href={child.url}
+                        target={getItemTarget(child)}
+                        rel={getItemRel(child)}
+                        aria-label={getItemLabel(child)}
+                      >
+                        {getItemLabel(child)}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ) : (
+              <a
+                href={item.url}
+                target={getItemTarget(item)}
+                rel={getItemRel(item)}
+                aria-label={getItemLabel(item)}
+              >
+                {getItemLabel(item)}
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+    
+    <a href="/" class="btn btn-ghost text-xl font-heading">
+      {logoUrl ? (
+        <img
+          src={logoUrl}
+          alt={siteName}
+          class="h-8 w-auto object-contain"
+          width={logoWidth}
+          height={logoHeight}
+          decoding="async"
+          fetchpriority="high"
+        />
+      ) : (
+        siteName
+      )}
+    </a>
+  </div>
+
+  {/* CENTER: Desktop Navigation */}
+  <div class="navbar-center hidden lg:flex">
+    <ul class="menu menu-horizontal px-1">
+      {navItems.map((item: any) => (
+        <li>
+          {item.children && item.children.length > 0 ? (
+            <details>
+              <summary>{getItemLabel(item)}</summary>
+              <ul class="p-2 bg-base-100 shadow-sm rounded-box min-w-max z-50">
+                {item.children.map((child: any) => (
+                  <li>
+                    <a
+                      href={child.url}
+                      target={getItemTarget(child)}
+                      rel={getItemRel(child)}
+                      aria-label={getItemLabel(child)}
+                    >
+                      {getItemLabel(child)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ) : (
+            <a
+              href={item.url}
+              target={getItemTarget(item)}
+              rel={getItemRel(item)}
+              aria-label={getItemLabel(item)}
+            >
+              {getItemLabel(item)}
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {/* RIGHT: Call to Action */}
+  <div class="navbar-end">
+    {cta && cta.label && cta.url && (
+      <a 
+        href={cta.url} 
+        target={cta.target === '_blank' ? '_blank' : undefined}
+        class={`btn btn-${cta.style || 'primary'} ${cta.size ? `btn-${cta.size}` : ''}`}
+      >
+        {cta.label}
+      </a>
+    )}
+  </div>
+</header>

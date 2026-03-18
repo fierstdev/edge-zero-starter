@@ -1,0 +1,15 @@
+{
+  "d1_databases": [
+    {
+      "binding": "edge-zero-db",
+      "database_name": "edge-zero-starter-db",
+      "database_id": "local-edge-zero-starter-db"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "edge-zero-starter-media"
+    }
+  ]
+}

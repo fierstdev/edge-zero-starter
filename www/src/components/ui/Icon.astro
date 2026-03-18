@@ -1,0 +1,59 @@
+---
+/**
+ * Icon.astro — Universal icon renderer for Edge Zero blocks.
+ *
+ * Handles three icon sources at build time (zero client JS):
+ *   1. Lucide icons — rendered as inline SVGs via @lucide/astro
+ *   2. Raw SVG strings — injected via set:html
+ *   3. Image URLs — rendered as <img> tags
+ *
+ * Accepts two shapes for CMS compatibility:
+ *   - Group field: { type: 'lucide' | 'svg-string' | 'image', value: string }
+ *   - Simple string: treated as a Lucide icon name (e.g. from StatsBlock)
+ */
+import { icons } from '@lucide/astro';
+
+interface Props {
+  /** Icon field from CMS — either a group { type, value } or a plain string (Lucide name) */
+  icon: string | { type?: string | null; value: string } | null | undefined;
+  /** CSS class for the icon wrapper/SVG (default: 'w-6 h-6') */
+  class?: string;
+}
+
+const { icon, class: className = 'w-6 h-6' } = Astro.props;
+
+if (!icon) return;
+
+// Normalize: accept either a group field or a plain string
+const iconType = typeof icon === 'string' ? 'lucide' : (icon.type || 'lucide');
+const iconValue = typeof icon === 'string' ? icon : (icon.value || (icon as any).name);
+
+if (!iconValue) return;
+
+// Convert kebab-case Lucide name to PascalCase component lookup
+// e.g. "shield-check" → "ShieldCheck", "layout-grid" → "LayoutGrid"
+function toPascalCase(str: string): string {
+  return str
+    .split('-')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('');
+}
+
+// Resolve the Lucide component if applicable
+let LucideComponent: any = null;
+if (iconType === 'lucide') {
+  const componentName = toPascalCase(iconValue);
+  LucideComponent = (icons as Record<string, any>)[componentName] || null;
+}
+---
+
+{iconType === 'image' ? (
+  <img src={iconValue} alt="" class={className} loading="lazy" decoding="async" />
+) : iconType === 'lucide' && LucideComponent ? (
+  <LucideComponent class={className} />
+) : iconType === 'svg-string' ? (
+  <div set:html={iconValue} class={`${className} [&>svg]:w-full [&>svg]:h-full`} />
+) : (
+  /* Fallback: render the raw value as text if Lucide icon wasn't found */
+  <span class={className} title={iconValue}>{iconValue}</span>
+)}

@@ -1,0 +1,383 @@
+---
+name: Features
+slug: features
+group: Foundation
+tier: starter
+description: One Features block with grid, list, and spotlight variants.
+---
+
+```ts schema
+[
+  anchorIdField,
+  {
+    name: 'variant',
+    type: 'select',
+    defaultValue: 'grid',
+    required: true,
+    options: [
+      { label: 'Grid', value: 'grid' },
+      { label: 'List', value: 'list' },
+      { label: 'Spotlight', value: 'spotlight' },
+    ],
+    admin: {
+      description: 'Choose the Features layout. Fields below adapt to the selected variant.',
+    },
+  },
+  badgeField,
+  {
+    name: 'heading',
+    type: 'text',
+    required: true,
+  },
+  {
+    name: 'subheading',
+    type: 'textarea',
+  },
+  {
+    name: 'columns',
+    type: 'select',
+    defaultValue: '3',
+    options: [
+      { label: '2 Columns', value: '2' },
+      { label: '3 Columns', value: '3' },
+      { label: '4 Columns', value: '4' },
+    ],
+    admin: {
+      condition: (_, siblingData) => siblingData?.variant === 'grid',
+    },
+  },
+  {
+    name: 'spotlightMedia',
+    type: 'upload',
+    relationTo: 'media',
+    admin: {
+      condition: (_, siblingData) => siblingData?.variant === 'spotlight',
+    },
+    validate: (value, { siblingData }) => {
+      if ((siblingData?.variant || 'grid') === 'spotlight' && !value) {
+        return 'Spotlight media is required for the Spotlight variant.';
+      }
+      return true;
+    },
+  },
+  {
+    name: 'spotlightMediaPosition',
+    type: 'select',
+    defaultValue: 'right',
+    options: [
+      { label: 'Left', value: 'left' },
+      { label: 'Right', value: 'right' },
+    ],
+    admin: {
+      condition: (_, siblingData) => siblingData?.variant === 'spotlight',
+    },
+  },
+  {
+    name: 'features',
+    type: 'array',
+    required: true,
+    labels: {
+      singular: 'Feature',
+      plural: 'Features',
+    },
+    validate: (value, { siblingData }) => {
+      const total = Array.isArray(value) ? value.length : 0;
+      const activeVariant = siblingData?.variant || 'grid';
+
+      if (total === 0) {
+        return 'Add at least one feature.';
+      }
+
+      if (activeVariant === 'spotlight' && total < 2) {
+        return 'Spotlight variant works best with at least two features.';
+      }
+
+      return true;
+    },
+    fields: [
+      {
+        name: 'title',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'description',
+        type: 'textarea',
+        required: true,
+      },
+      {
+        ...iconField,
+        name: 'icon',
+        label: 'Icon',
+      },
+      {
+        name: 'action',
+        type: 'group',
+        label: 'Optional Action',
+        validate: (value) => {
+          const label = String(value?.label || '').trim();
+          const url = String(value?.url || '').trim();
+          if ((label && !url) || (!label && url)) {
+            return 'Provide both action label and URL, or leave both empty.';
+          }
+          return true;
+        },
+        fields: [
+          {
+            type: 'row',
+            fields: [
+              {
+                name: 'label',
+                type: 'text',
+                admin: { width: '50%' },
+              },
+              {
+                name: 'url',
+                type: 'text',
+                admin: { width: '50%' },
+              },
+            ],
+          },
+          {
+            type: 'row',
+            fields: [
+              {
+                name: 'target',
+                type: 'select',
+                defaultValue: '_self',
+                options: [
+                  { label: 'Same Window (_self)', value: '_self' },
+                  { label: 'New Tab (_blank)', value: '_blank' },
+                ],
+                admin: { width: '33%' },
+              },
+              {
+                name: 'style',
+                type: 'select',
+                defaultValue: 'outline',
+                options: [
+                  { label: 'Primary', value: 'primary' },
+                  { label: 'Secondary', value: 'secondary' },
+                  { label: 'Accent', value: 'accent' },
+                  { label: 'Neutral', value: 'neutral' },
+                  { label: 'Ghost', value: 'ghost' },
+                  { label: 'Outline', value: 'outline' },
+                  { label: 'Text Link', value: 'link' },
+                ],
+                admin: { width: '33%' },
+              },
+              {
+                name: 'size',
+                type: 'select',
+                defaultValue: 'sm',
+                options: [
+                  { label: 'Small', value: 'sm' },
+                  { label: 'Medium', value: 'md' },
+                  { label: 'Large', value: 'lg' },
+                ],
+                admin: { width: '33%' },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+]
+```
+
+```ts script
+const anchorId = block.anchorId;
+const variant = block.variant || 'grid';
+const badge = block.badge;
+const heading = block.heading;
+const subheading = block.subheading;
+const columns = block.columns;
+const spotlightMedia = block.spotlightMedia;
+const spotlightMediaPosition = block.spotlightMediaPosition;
+const features = block.features;
+
+const badgeClass = badge?.color ? `badge-${badge.color}` : 'badge-primary';
+const sectionId = anchorId || `${block?.id || 'features'}-section`;
+const headingId = `${sectionId}-heading`;
+const featureItems = Array.isArray(features) ? features : [];
+const spotlightMediaUrl = resolveMediaUrl(spotlightMedia, ['feature', 'card', 'thumbnail', 'hero']);
+const spotlightMediaSrcSet = resolveMediaSrcSet(spotlightMedia, ['thumbnail', 'card', 'feature', 'hero']);
+const spotlightMediaDimensions = resolveMediaDimensions(spotlightMedia, ['card', 'feature', 'hero']);
+const useLeftMedia = spotlightMediaPosition === 'left';
+const [spotlightPrimary, ...spotlightSecondary] = featureItems;
+
+const gridClass =
+  columns === '2'
+    ? 'md:grid-cols-2'
+    : columns === '4'
+      ? 'md:grid-cols-2 xl:grid-cols-4'
+      : 'md:grid-cols-2 lg:grid-cols-3';
+
+const toButtonClass = (action?: any) => {
+  const styleClass = action?.style ? `btn-${action.style}` : 'btn-outline';
+  const sizeClass = action?.size ? `btn-${action.size}` : 'btn-sm';
+  return `btn ${styleClass} ${sizeClass}`;
+};
+```
+
+```astro template
+<section id={anchorId || undefined} aria-labelledby={headingId} class="px-4 py-14 sm:py-18">
+  <div class="mx-auto max-w-6xl space-y-8">
+    <header class="max-w-3xl space-y-4">
+      {badge?.label && (
+        <span class={`badge ${badgeClass} ${badge?.size ? `badge-${badge.size}` : ''}`}>
+          {badge.label}
+        </span>
+      )}
+      <h2 id={headingId} class="text-3xl font-bold tracking-tight sm:text-4xl">{heading}</h2>
+      {subheading && <p class="text-base text-base-content/80 sm:text-lg">{subheading}</p>}
+    </header>
+
+    {variant === 'grid' && (
+      <div class:list={['grid gap-5 sm:gap-6', gridClass]}>
+        {featureItems.map((feature: any, index: number) => (
+          <article class="card card-border bg-base-100 h-full shadow-sm">
+            <div class="card-body gap-4">
+              <div class="inline-flex size-11 items-center justify-center rounded-box bg-primary/10 text-primary">
+                {feature.icon ? (
+                  <Icon icon={feature.icon} class="size-5" />
+                ) : (
+                  <span class="text-sm font-semibold">{index + 1}</span>
+                )}
+              </div>
+              <h3 class="card-title text-xl">{feature.title}</h3>
+              <p class="text-sm leading-relaxed text-base-content/80">{feature.description}</p>
+              {feature.action?.url && feature.action?.label && (
+                <div class="card-actions mt-2">
+                  <a
+                    href={feature.action.url}
+                    target={feature.action.target === '_blank' ? '_blank' : undefined}
+                    rel={feature.action.target === '_blank' ? 'noreferrer noopener' : undefined}
+                    class={toButtonClass(feature.action)}
+                  >
+                    {feature.action.label}
+                  </a>
+                </div>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+
+    {variant === 'list' && (
+      <ul class="list bg-base-200/20">
+        {featureItems.map((feature: any, index: number) => (
+          <li class="list-row items-start gap-4 p-5 sm:p-6">
+            <div class="inline-flex size-10 shrink-0 items-center justify-center rounded-box bg-primary/10 text-primary">
+              {feature.icon ? (
+                <Icon icon={feature.icon} class="size-5" />
+              ) : (
+                <span class="text-sm font-semibold">{index + 1}</span>
+              )}
+            </div>
+            <div class="list-col-grow space-y-1">
+              <h3 class="font-semibold">{feature.title}</h3>
+              <p class="text-sm text-base-content/80">{feature.description}</p>
+            </div>
+            {feature.action?.url && feature.action?.label && (
+              <a
+                href={feature.action.url}
+                target={feature.action.target === '_blank' ? '_blank' : undefined}
+                rel={feature.action.target === '_blank' ? 'noreferrer noopener' : undefined}
+                class={toButtonClass(feature.action)}
+              >
+                {feature.action.label}
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {variant === 'spotlight' && (
+      <div class:list={[
+        'grid items-start gap-6 bg-base-200/25 p-6 sm:p-8 lg:grid-cols-12 lg:p-10',
+        useLeftMedia ? 'lg:[&>*:first-child]:order-2 lg:[&>*:last-child]:order-1' : '',
+      ]}>
+        <div class="space-y-4 lg:col-span-6">
+          {spotlightPrimary && (
+            <article class="card card-border bg-base-100 shadow-sm">
+              <div class="card-body gap-4">
+                <div class="inline-flex size-11 items-center justify-center rounded-box bg-primary/10 text-primary">
+                  {spotlightPrimary.icon ? <Icon icon={spotlightPrimary.icon} class="size-5" /> : <span class="text-sm font-semibold">1</span>}
+                </div>
+                <h3 class="card-title text-2xl">{spotlightPrimary.title}</h3>
+                <p class="text-sm leading-relaxed text-base-content/80 sm:text-base">{spotlightPrimary.description}</p>
+                {spotlightPrimary.action?.url && spotlightPrimary.action?.label && (
+                  <div class="card-actions mt-1">
+                    <a
+                      href={spotlightPrimary.action.url}
+                      target={spotlightPrimary.action.target === '_blank' ? '_blank' : undefined}
+                      rel={spotlightPrimary.action.target === '_blank' ? 'noreferrer noopener' : undefined}
+                      class={toButtonClass(spotlightPrimary.action)}
+                    >
+                      {spotlightPrimary.action.label}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </article>
+          )}
+
+          {spotlightSecondary.length > 0 && (
+            <div class="space-y-3">
+              {spotlightSecondary.map((feature: any, index: number) => (
+                <article class="card card-border bg-base-100 shadow-sm">
+                  <div class="card-body gap-2 py-4 sm:py-5">
+                    <div class="flex items-start gap-3">
+                      <div class="inline-flex size-10 shrink-0 items-center justify-center rounded-box bg-primary/10 text-primary">
+                        {feature.icon ? (
+                          <Icon icon={feature.icon} class="size-5" />
+                        ) : (
+                          <span class="text-sm font-semibold">{index + 2}</span>
+                        )}
+                      </div>
+                      <h4 class="pt-1 font-semibold">{feature.title}</h4>
+                    </div>
+                    <p class="text-sm text-base-content/80">{feature.description}</p>
+                    {feature.action?.url && feature.action?.label && (
+                      <div class="card-actions mt-1">
+                        <a
+                          href={feature.action.url}
+                          target={feature.action.target === '_blank' ? '_blank' : undefined}
+                          rel={feature.action.target === '_blank' ? 'noreferrer noopener' : undefined}
+                          class={toButtonClass(feature.action)}
+                        >
+                          {feature.action.label}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {spotlightMediaUrl && (
+          <figure class="overflow-hidden rounded-box lg:col-span-6">
+            <img
+              src={spotlightMediaUrl}
+              srcset={spotlightMediaSrcSet}
+              alt={spotlightMedia?.altText || ''}
+              class="h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
+              width={spotlightMediaDimensions.width || undefined}
+              height={spotlightMediaDimensions.height || undefined}
+              sizes="(min-width: 1200px) 576px, (min-width: 1024px) 50vw, 100vw"
+            />
+          </figure>
+        )}
+      </div>
+    )}
+  </div>
+</section>
+```

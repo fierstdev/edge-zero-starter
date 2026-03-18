@@ -1,0 +1,369 @@
+---
+name: Pricing
+slug: pricing
+group: Foundation
+tier: starter
+description: One Pricing block with card, comparison, and compact variants.
+---
+
+```ts schema
+[
+  anchorIdField,
+  {
+    name: 'variant',
+    type: 'select',
+    defaultValue: 'cards',
+    required: true,
+    options: [
+      { label: 'Cards', value: 'cards' },
+      { label: 'Comparison', value: 'comparison' },
+      { label: 'Compact', value: 'compact' },
+    ],
+    admin: {
+      description: 'Choose pricing presentation. The section adapts to this variant.',
+    },
+  },
+  badgeField,
+  {
+    name: 'heading',
+    type: 'text',
+    required: true,
+  },
+  {
+    name: 'subheading',
+    type: 'textarea',
+  },
+  {
+    name: 'billingNote',
+    type: 'text',
+  },
+  {
+    name: 'comparisonFootnote',
+    type: 'text',
+    admin: {
+      condition: (_, siblingData) => siblingData?.variant === 'comparison',
+    },
+  },
+  {
+    name: 'compactEyebrow',
+    type: 'text',
+    admin: {
+      condition: (_, siblingData) => siblingData?.variant === 'compact',
+    },
+  },
+  {
+    name: 'plans',
+    type: 'array',
+    required: true,
+    labels: {
+      singular: 'Plan',
+      plural: 'Plans',
+    },
+    validate: (value, { siblingData }) => {
+      const planCount = Array.isArray(value) ? value.length : 0;
+      const activeVariant = siblingData?.variant || 'cards';
+
+      if (planCount === 0) {
+        return 'Add at least one plan.';
+      }
+
+      if (activeVariant === 'comparison' && planCount < 2) {
+        return 'Comparison variant requires at least two plans.';
+      }
+
+      return true;
+    },
+    fields: [
+      {
+        name: 'name',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'price',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'billingPeriod',
+        type: 'text',
+      },
+      {
+        name: 'description',
+        type: 'textarea',
+      },
+      {
+        name: 'planBadge',
+        type: 'text',
+      },
+      {
+        name: 'isHighlighted',
+        type: 'checkbox',
+        defaultValue: false,
+      },
+      {
+        name: 'features',
+        type: 'array',
+        required: true,
+        labels: {
+          singular: 'Feature',
+          plural: 'Features',
+        },
+        fields: [
+          {
+            name: 'item',
+            type: 'text',
+            required: true,
+          },
+          {
+            name: 'included',
+            type: 'checkbox',
+            defaultValue: true,
+            admin: {
+              description: 'Use this to mark excluded items in Comparison mode.',
+            },
+          },
+        ],
+      },
+      {
+        ...linkField,
+        name: 'action',
+        label: 'Plan Action',
+        required: true,
+      },
+    ],
+  },
+]
+```
+
+```ts script
+const anchorId = block.anchorId;
+const variant = block.variant || 'cards';
+const badge = block.badge;
+const heading = block.heading;
+const subheading = block.subheading;
+const billingNote = block.billingNote;
+const comparisonFootnote = block.comparisonFootnote;
+const compactEyebrow = block.compactEyebrow;
+const plans = block.plans;
+
+const badgeClass = badge?.color ? `badge-${badge.color}` : 'badge-primary';
+const sectionId = anchorId || `${block?.id || 'pricing'}-section`;
+const headingId = `${sectionId}-heading`;
+const pricingPlans = Array.isArray(plans) ? plans : [];
+
+const normalizeFeatureName = (value: any) => String(value || '').trim();
+
+const comparisonFeatureNames = Array.from(
+  new Set(
+    pricingPlans.flatMap((plan: any) =>
+      (Array.isArray(plan.features) ? plan.features : [])
+        .map((feature: any) => normalizeFeatureName(feature?.item))
+        .filter(Boolean),
+    ),
+  ),
+);
+
+const isFeatureIncludedForPlan = (plan: any, featureName: string) => {
+  const matched = (Array.isArray(plan.features) ? plan.features : []).find(
+    (feature: any) => normalizeFeatureName(feature?.item) === featureName,
+  );
+
+  if (!matched) return false;
+  return matched.included !== false;
+};
+
+const toButtonClass = (action?: any, highlighted?: boolean, isCompact?: boolean) => {
+  const defaultStyle = highlighted ? 'btn-primary' : 'btn-outline';
+  const styleClass = action?.style ? `btn-${action.style}` : defaultStyle;
+  const sizeClass = action?.size ? `btn-${action.size}` : isCompact ? 'btn-sm' : 'btn-md';
+  return `btn ${styleClass} ${sizeClass} ${isCompact ? '' : 'btn-block'}`.trim();
+};
+```
+
+```astro template
+<section id={anchorId || undefined} aria-labelledby={headingId} class="px-4 py-14 sm:py-18 lg:py-22">
+  <div class="mx-auto max-w-6xl space-y-8">
+    <header class="max-w-3xl space-y-4">
+      {badge?.label && (
+        <span class={`badge ${badgeClass} ${badge?.size ? `badge-${badge.size}` : ''}`}>
+          {badge.label}
+        </span>
+      )}
+      <h2 id={headingId} class="text-3xl font-bold tracking-tight sm:text-4xl">{heading}</h2>
+      {subheading && <p class="text-base text-base-content/80 sm:text-lg">{subheading}</p>}
+      {billingNote && <p class="text-sm text-base-content/75">{billingNote}</p>}
+    </header>
+
+    {variant === 'cards' && (
+      <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {pricingPlans.map((plan: any) => (
+          <article
+            class:list={[
+              'card h-full bg-base-100 shadow-sm',
+              plan.isHighlighted ? 'border-2 border-primary' : 'card-border border border-base-300',
+            ]}
+          >
+            <div class="card-body gap-5">
+              {plan.planBadge && <span class="badge badge-warning badge-sm">{plan.planBadge}</span>}
+
+              <div class="space-y-1">
+                <h3 class="text-2xl font-bold">{plan.name}</h3>
+                <p class="text-3xl font-black">
+                  {plan.price}
+                  {plan.billingPeriod && (
+                    <span class="ml-1 text-base font-medium text-base-content/75">{plan.billingPeriod}</span>
+                  )}
+                </p>
+                {plan.description && <p class="text-sm text-base-content/80">{plan.description}</p>}
+              </div>
+
+              <ul class="space-y-2 text-sm">
+                {(Array.isArray(plan.features) ? plan.features : [])
+                  .filter((feature: any) => feature?.included !== false)
+                  .map((feature: any) => (
+                    <li class="flex items-start gap-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        class="mt-0.5 size-4 shrink-0 text-success"
+                        aria-hidden="true"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>{feature.item}</span>
+                    </li>
+                  ))}
+              </ul>
+
+              {plan.action?.url && plan.action?.label && (
+                <div class="mt-auto pt-2">
+                  <a
+                    href={plan.action.url}
+                    target={plan.action.target === '_blank' ? '_blank' : undefined}
+                    rel={plan.action.target === '_blank' ? 'noreferrer noopener' : undefined}
+                    class={toButtonClass(plan.action, plan.isHighlighted, false)}
+                  >
+                    {plan.action.label}
+                  </a>
+                </div>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+
+    {variant === 'comparison' && (
+      <div class="space-y-4">
+        <div class="overflow-x-auto bg-base-200/25">
+          <table class="table table-zebra">
+            <thead>
+              <tr>
+                <th class="min-w-44">Feature</th>
+                {pricingPlans.map((plan: any) => (
+                  <th class="min-w-44">
+                    <div class="space-y-1">
+                      <p class="font-semibold">{plan.name}</p>
+                      <p class="text-sm text-base-content/75">
+                        {plan.price}
+                        {plan.billingPeriod ? ` ${plan.billingPeriod}` : ''}
+                      </p>
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {comparisonFeatureNames.map((featureName: string) => (
+                <tr>
+                  <th scope="row">{featureName}</th>
+                  {pricingPlans.map((plan: any) => {
+                    const included = isFeatureIncludedForPlan(plan, featureName);
+                    return (
+                      <td>
+                        {included ? (
+                          <span class="badge badge-success">Included</span>
+                        ) : (
+                          <span class="badge badge-ghost">—</span>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>Action</th>
+                {pricingPlans.map((plan: any) => (
+                  <td>
+                    {plan.action?.url && plan.action?.label && (
+                      <a
+                        href={plan.action.url}
+                        target={plan.action.target === '_blank' ? '_blank' : undefined}
+                        rel={plan.action.target === '_blank' ? 'noreferrer noopener' : undefined}
+                        class={toButtonClass(plan.action, plan.isHighlighted, true)}
+                      >
+                        {plan.action.label}
+                      </a>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        {comparisonFootnote && <p class="text-sm text-base-content/75">{comparisonFootnote}</p>}
+      </div>
+    )}
+
+    {variant === 'compact' && (
+      <div class="space-y-4">
+        {compactEyebrow && <p class="text-xs font-semibold uppercase tracking-wider text-base-content/75">{compactEyebrow}</p>}
+
+        {pricingPlans.map((plan: any) => (
+          <article class="card card-border bg-base-100 shadow-sm">
+            <div class="card-body gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div class="space-y-2">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="text-xl font-bold">{plan.name}</h3>
+                  {plan.planBadge && <span class="badge badge-warning badge-xs">{plan.planBadge}</span>}
+                </div>
+                <p class="text-base font-semibold">
+                  {plan.price}
+                  {plan.billingPeriod && (
+                    <span class="ml-1 text-sm font-medium text-base-content/75">{plan.billingPeriod}</span>
+                  )}
+                </p>
+                <p class="text-sm text-base-content/80">
+                  {(Array.isArray(plan.features) ? plan.features : [])
+                    .filter((feature: any) => feature?.included !== false)
+                    .map((feature: any) => feature.item)
+                    .slice(0, 3)
+                    .join(' • ')}
+                </p>
+              </div>
+
+              {plan.action?.url && plan.action?.label && (
+                <a
+                  href={plan.action.url}
+                  target={plan.action.target === '_blank' ? '_blank' : undefined}
+                  rel={plan.action.target === '_blank' ? 'noreferrer noopener' : undefined}
+                  class={toButtonClass(plan.action, plan.isHighlighted, true)}
+                >
+                  {plan.action.label}
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+```

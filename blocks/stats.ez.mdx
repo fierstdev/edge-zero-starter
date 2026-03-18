@@ -1,0 +1,163 @@
+---
+name: Stats
+slug: stats
+group: Foundation
+tier: starter
+description: One Stats block with band, grid, and spotlight variants.
+---
+
+```ts schema
+[
+  anchorIdField,
+  {
+    name: 'variant',
+    type: 'select',
+    defaultValue: 'band',
+    required: true,
+    options: [
+      { label: 'Band', value: 'band' },
+      { label: 'Grid', value: 'grid' },
+      { label: 'Spotlight', value: 'spotlight' },
+    ],
+    admin: {
+      description: 'Choose the stats presentation style.',
+    },
+  },
+  {
+    name: 'heading',
+    type: 'text',
+  },
+  {
+    name: 'subheading',
+    type: 'textarea',
+  },
+  {
+    name: 'spotlightLabel',
+    type: 'text',
+    admin: {
+      condition: (_, siblingData) => siblingData?.variant === 'spotlight',
+    },
+  },
+  {
+    name: 'items',
+    type: 'array',
+    required: true,
+    labels: {
+      singular: 'Metric',
+      plural: 'Metrics',
+    },
+    validate: (value, { siblingData }) => {
+      const count = Array.isArray(value) ? value.length : 0;
+      const activeVariant = siblingData?.variant || 'band';
+
+      if (count === 0) {
+        return 'Add at least one metric.';
+      }
+
+      if (activeVariant === 'spotlight' && count < 2) {
+        return 'Spotlight variant works best with at least two metrics.';
+      }
+
+      return true;
+    },
+    fields: [
+      {
+        name: 'label',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'value',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'description',
+        type: 'text',
+      },
+    ],
+  },
+]
+```
+
+```ts script
+const anchorId = block.anchorId;
+const variant = block.variant || 'band';
+const heading = block.heading;
+const subheading = block.subheading;
+const spotlightLabel = block.spotlightLabel;
+const items = block.items;
+
+const sectionId = anchorId || `${block?.id || 'stats'}-section`;
+const headingId = `${sectionId}-heading`;
+const statItems = Array.isArray(items) ? items : [];
+const [primaryStat, ...secondaryStats] = statItems;
+```
+
+```astro template
+<section id={anchorId || undefined} aria-labelledby={headingId} class="px-4 py-12 sm:py-16">
+  <div class="mx-auto max-w-6xl space-y-8">
+    {(heading || subheading) && (
+      <header class="max-w-3xl space-y-3">
+        {heading && (
+          <h2 id={headingId} class="text-3xl font-bold tracking-tight sm:text-4xl">
+            {heading}
+          </h2>
+        )}
+        {subheading && <p class="text-base text-base-content/80 sm:text-lg">{subheading}</p>}
+      </header>
+    )}
+
+    {variant === 'band' && (
+      <div class="stats stats-vertical lg:stats-horizontal w-full bg-base-200/25">
+        {statItems.map((item: any) => (
+          <div class="stat px-5 py-6 sm:px-7">
+            <div class="stat-title text-sm">{item.label}</div>
+            <div class="stat-value text-3xl lg:text-4xl">{item.value}</div>
+            {item.description && <div class="stat-desc text-sm">{item.description}</div>}
+          </div>
+        ))}
+      </div>
+    )}
+
+    {variant === 'grid' && (
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {statItems.map((item: any) => (
+          <article class="card card-border bg-base-100 shadow-sm">
+            <div class="card-body gap-2">
+              <p class="text-sm text-base-content/75">{item.label}</p>
+              <p class="text-3xl font-black">{item.value}</p>
+              {item.description && <p class="text-sm text-base-content/80">{item.description}</p>}
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+
+    {variant === 'spotlight' && primaryStat && (
+      <div class="grid gap-4 lg:grid-cols-12">
+        <article class="card card-border bg-base-100 shadow-sm lg:col-span-5">
+          <div class="card-body gap-3 sm:p-8">
+            {spotlightLabel && <p class="text-xs font-semibold uppercase tracking-wider text-base-content/75">{spotlightLabel}</p>}
+            <p class="text-sm text-base-content/80">{primaryStat.label}</p>
+            <p class="text-5xl font-black">{primaryStat.value}</p>
+            {primaryStat.description && <p class="text-sm text-base-content/80">{primaryStat.description}</p>}
+          </div>
+        </article>
+
+        <div class="grid gap-4 sm:grid-cols-2 lg:col-span-7">
+          {secondaryStats.map((item: any) => (
+            <article class="card card-border bg-base-100 shadow-sm">
+              <div class="card-body gap-2 py-5">
+                <p class="text-sm text-base-content/75">{item.label}</p>
+                <p class="text-2xl font-bold">{item.value}</p>
+                {item.description && <p class="text-sm text-base-content/80">{item.description}</p>}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+```

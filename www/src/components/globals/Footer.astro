@@ -1,0 +1,85 @@
+---
+import type { GlobalFooter } from '@edge-zero/types';
+import { fetchGlobal } from '../../lib/cms';
+
+interface Props {
+  footerData?: GlobalFooter | null;
+}
+
+const { footerData: providedFooterData } = Astro.props as Props;
+const footerData =
+  providedFooterData === undefined ? await fetchGlobal<GlobalFooter>('footer') : providedFooterData;
+
+// Fallbacks for the factory floor before data is entered
+const columns = footerData?.columns || [];
+const socialLinks = footerData?.socialLinks || [];
+const bottomLinks = footerData?.bottomLinks || [];
+const legalText = footerData?.legalText || '© 2026 Edge Zero. All rights reserved.';
+const theme = footerData?.themeOverride ? footerData.themeOverride : undefined;
+
+const getLinkLabel = (item: any) => {
+  const label = String(item?.label || item?.platform || '').trim();
+  if (label) return label;
+  const url = String(item?.url || '').trim();
+  return url || 'Footer link';
+};
+---
+
+{footerData && (
+  <footer class="bg-base-200 text-base-content w-full" data-theme={theme}>
+    <div class="footer sm:footer-horizontal p-10 max-w-7xl mx-auto">
+      {columns.map((column: any) => (
+        <nav>
+          <h6 class="footer-title">{column.title}</h6> 
+          {column.links && column.links.map((linkItem: any) => (
+            <a 
+              href={linkItem.url} 
+              target={linkItem.target === '_blank' ? '_blank' : undefined}
+              rel={linkItem.target === '_blank' ? 'noreferrer noopener' : undefined}
+              aria-label={getLinkLabel(linkItem)}
+              class="link link-hover"
+            >
+              {getLinkLabel(linkItem)}
+            </a>
+          ))}
+        </nav>
+      ))}
+    </div>
+    
+    <div class="footer sm:footer-horizontal px-10 py-4 border-t border-neutral-content/20 max-w-7xl mx-auto">
+      <aside class="items-center grid-flow-col">
+        <p class="text-sm opacity-80">{legalText}</p>
+      </aside> 
+      
+      <nav class="md:place-self-center md:justify-self-end">
+        <div class="grid grid-flow-col gap-6 items-center">
+          {bottomLinks.map((linkItem: any) => (
+            <a
+              href={linkItem.url}
+              target={linkItem.target === '_blank' ? '_blank' : undefined}
+              rel={linkItem.target === '_blank' ? 'noreferrer noopener' : undefined}
+              aria-label={getLinkLabel(linkItem)}
+              class="link link-hover text-sm"
+            >
+              {getLinkLabel(linkItem)}
+            </a>
+          ))}
+          
+          {socialLinks.length > 0 && <div class="w-px h-4 bg-neutral-content/30 mx-2 hidden sm:block"></div>}
+          
+          {socialLinks.map((social: any) => (
+            <a
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={getLinkLabel(social)}
+              class="hover:text-primary transition-colors text-sm font-semibold capitalize tracking-wider"
+            >
+              {getLinkLabel(social)}
+            </a>
+          ))}
+        </div>
+      </nav>
+    </div>
+  </footer>
+)}

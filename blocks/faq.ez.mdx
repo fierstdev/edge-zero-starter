@@ -1,0 +1,311 @@
+---
+name: FAQ
+slug: faq
+group: Foundation
+tier: starter
+description: One FAQ block with accordion, list, and two-column variants.
+---
+
+```ts schema
+[
+  anchorIdField,
+  {
+    name: 'variant',
+    type: 'select',
+    defaultValue: 'accordion',
+    required: true,
+    options: [
+      { label: 'Accordion', value: 'accordion' },
+      { label: 'List', value: 'list' },
+      { label: 'Two Column', value: 'two-column' },
+    ],
+    admin: {
+      description: 'Choose FAQ layout.',
+    },
+  },
+  {
+    name: 'heading',
+    type: 'text',
+    required: true,
+  },
+  {
+    name: 'subheading',
+    type: 'textarea',
+  },
+  {
+    name: 'allowMultipleOpen',
+    type: 'checkbox',
+    defaultValue: false,
+    admin: {
+      condition: (_, siblingData) => siblingData?.variant === 'accordion',
+      description: 'Enable to allow multiple expanded items at once in accordion mode.',
+    },
+  },
+  {
+    name: 'items',
+    type: 'array',
+    required: true,
+    labels: {
+      singular: 'FAQ Item',
+      plural: 'FAQ Items',
+    },
+    validate: (value, { siblingData }) => {
+      const count = Array.isArray(value) ? value.length : 0;
+      const activeVariant = siblingData?.variant || 'accordion';
+
+      if (count === 0) {
+        return 'Add at least one FAQ item.';
+      }
+
+      if (activeVariant === 'two-column' && count < 4) {
+        return 'Two Column FAQ works best with at least four items.';
+      }
+
+      return true;
+    },
+    fields: [
+      {
+        name: 'question',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'answer',
+        type: 'textarea',
+        required: true,
+      },
+      {
+        name: 'isOpenByDefault',
+        type: 'checkbox',
+        defaultValue: false,
+      },
+    ],
+  },
+]
+```
+
+```ts script
+const anchorId = block.anchorId;
+const variant = block.variant || 'accordion';
+const heading = block.heading;
+const subheading = block.subheading;
+const allowMultipleOpen = Boolean(block.allowMultipleOpen);
+const items = block.items;
+
+const sectionId = anchorId || `${block?.id || 'faq'}-section`;
+const headingId = `${sectionId}-heading`;
+const accordionName = `faq-${block?.id || 'group'}`;
+const faqItems = Array.isArray(items) ? items : [];
+const firstDefaultIndex = faqItems.findIndex((item: any) => Boolean(item?.isOpenByDefault));
+const inputType = allowMultipleOpen ? 'checkbox' : 'radio';
+const defaultTwoColumnIndex = firstDefaultIndex >= 0 ? firstDefaultIndex : 0;
+const twoColumnDefaultItem = faqItems[defaultTwoColumnIndex] || faqItems[0] || null;
+const twoColumnRailId = `${sectionId}-question-rail`;
+const twoColumnPanelId = `${sectionId}-answer-panel`;
+const twoColumnItems = faqItems.map((item: any) => ({
+  question: String(item?.question || ''),
+  answer: String(item?.answer || ''),
+}));
+```
+
+```astro template
+<section id={anchorId || undefined} aria-labelledby={headingId} class="px-4 py-14 sm:py-18">
+  <div class="mx-auto max-w-6xl space-y-8">
+    <header class="max-w-3xl space-y-3">
+      <h2 id={headingId} class="text-3xl font-bold tracking-tight sm:text-4xl">{heading}</h2>
+      {subheading && <p class="text-base text-base-content/80 sm:text-lg">{subheading}</p>}
+    </header>
+
+    {variant === 'list' && (
+      <div class="space-y-3">
+        {faqItems.map((item: any) => (
+          <article class="card card-border bg-base-100 shadow-sm">
+            <div class="card-body gap-3">
+              <h3 class="card-title text-lg">{item.question}</h3>
+              <p class="text-sm leading-relaxed text-base-content/75 sm:text-base">{item.answer}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+
+    {variant === 'accordion' && (
+      <div class="space-y-3">
+        {faqItems.map((item: any, index: number) => (
+          <div class="collapse collapse-arrow border border-base-300 bg-base-100 shadow-sm">
+            <input
+              type={inputType}
+              name={allowMultipleOpen ? undefined : accordionName}
+              autocomplete="off"
+              checked={item.isOpenByDefault || (firstDefaultIndex === -1 && index === 0)}
+            />
+            <div class="collapse-title text-lg font-semibold">{item.question}</div>
+            <div class="collapse-content">
+              <p class="text-sm leading-relaxed text-base-content/75 sm:text-base">{item.answer}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {variant === 'two-column' && (
+      <div class="space-y-4">
+        <div class="space-y-3 lg:hidden">
+          {faqItems.map((item: any, index: number) => (
+            <div class="collapse collapse-arrow border border-base-300 bg-base-100 shadow-sm">
+              <input
+                type="radio"
+                name={`${accordionName}-two-column-mobile`}
+                autocomplete="off"
+                checked={item.isOpenByDefault || (firstDefaultIndex === -1 && index === 0)}
+              />
+              <div class="collapse-title text-lg font-semibold">{item.question}</div>
+              <div class="collapse-content">
+                <p class="text-sm leading-relaxed text-base-content/75 sm:text-base">{item.answer}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="hidden lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
+          <div
+            id={twoColumnRailId}
+            class="space-y-3"
+            role="tablist"
+            aria-orientation="vertical"
+            aria-label={`${heading} questions`}
+          >
+            {faqItems.map((item: any, index: number) => (
+              <button
+                id={`${sectionId}-tab-${index}`}
+                type="button"
+                role="tab"
+                aria-controls={twoColumnPanelId}
+                aria-selected={index === defaultTwoColumnIndex ? 'true' : 'false'}
+                tabindex={index === defaultTwoColumnIndex ? 0 : -1}
+                data-faq-question
+                data-index={index}
+                class:list={[
+                  'group flex w-full items-start justify-between gap-4 rounded-box border px-5 py-4 text-left shadow-sm transition',
+                  index === defaultTwoColumnIndex
+                    ? 'border-primary/50 bg-primary/5 shadow-md'
+                    : 'border-base-300 bg-base-100 hover:border-primary/30',
+                ]}
+              >
+                <span class="text-lg font-semibold leading-snug">{item.question}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class:list={[
+                    'mt-1 size-5 shrink-0 text-base-content/75 transition-transform',
+                    index === defaultTwoColumnIndex ? 'rotate-90' : '',
+                  ]}
+                  data-faq-indicator
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+            ))}
+          </div>
+
+          {twoColumnDefaultItem && (
+            <article
+              id={twoColumnPanelId}
+              role="tabpanel"
+              aria-labelledby={`${sectionId}-tab-${defaultTwoColumnIndex}`}
+              class="card card-border bg-base-100 shadow-sm lg:sticky lg:top-24"
+            >
+              <div class="card-body gap-3 sm:p-6">
+                <h3 class="card-title text-xl" data-faq-panel-question>{twoColumnDefaultItem.question}</h3>
+                <p class="whitespace-pre-line text-sm leading-relaxed text-base-content/75 sm:text-base" data-faq-panel-answer>
+                  {twoColumnDefaultItem.answer}
+                </p>
+              </div>
+            </article>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+
+{variant === 'two-column' && faqItems.length > 0 && (
+  <script is:inline define:vars={{ twoColumnRailId, twoColumnPanelId, defaultTwoColumnIndex, twoColumnItems }}>
+    (() => {
+      const rail = document.getElementById(twoColumnRailId);
+      const panel = document.getElementById(twoColumnPanelId);
+      if (!rail || !panel) return;
+
+      const questionEl = panel.querySelector('[data-faq-panel-question]');
+      const answerEl = panel.querySelector('[data-faq-panel-answer]');
+      const tabs = Array.from(rail.querySelectorAll('[data-faq-question]'));
+
+      if (!questionEl || !answerEl || tabs.length === 0) return;
+
+      const applyActiveTab = (index) => {
+        if (index < 0 || index >= tabs.length) return;
+
+        tabs.forEach((tab, tabIndex) => {
+          const isActive = tabIndex === index;
+          tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          tab.setAttribute('tabindex', isActive ? '0' : '-1');
+
+          tab.classList.toggle('border-primary/50', isActive);
+          tab.classList.toggle('bg-primary/5', isActive);
+          tab.classList.toggle('shadow-md', isActive);
+          tab.classList.toggle('border-base-300', !isActive);
+          tab.classList.toggle('bg-base-100', !isActive);
+
+          const indicator = tab.querySelector('[data-faq-indicator]');
+          if (indicator) {
+            indicator.classList.toggle('rotate-90', isActive);
+          }
+        });
+
+        const activeTab = tabs[index];
+        panel.setAttribute('aria-labelledby', activeTab.id);
+        const nextItem = twoColumnItems[index] || { question: '', answer: '' };
+        questionEl.textContent = nextItem.question;
+        answerEl.textContent = nextItem.answer;
+      };
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => {
+          applyActiveTab(index);
+        });
+
+        tab.addEventListener('keydown', (event) => {
+          const { key } = event;
+          if (!['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', 'Home', 'End'].includes(key)) {
+            return;
+          }
+
+          event.preventDefault();
+
+          const currentIndex = Number(tab.dataset.index || index);
+          let nextIndex = currentIndex;
+
+          if (key === 'ArrowRight' || key === 'ArrowDown') {
+            nextIndex = (currentIndex + 1) % tabs.length;
+          } else if (key === 'ArrowLeft' || key === 'ArrowUp') {
+            nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+          } else if (key === 'Home') {
+            nextIndex = 0;
+          } else if (key === 'End') {
+            nextIndex = tabs.length - 1;
+          }
+
+          applyActiveTab(nextIndex);
+          tabs[nextIndex]?.focus();
+        });
+      });
+
+      applyActiveTab(defaultTwoColumnIndex);
+    })();
+  </script>
+)}
+```

@@ -1,0 +1,46 @@
+{
+  "name": "@edge-zero/starter-www",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components/blocks": "./src/components/blocks/generated/index.ts",
+    "./components/*": "./src/components/*",
+    "./lib/media": "./src/lib/media.ts",
+    "./lib/*": "./src/lib/*",
+    "./layouts/*": "./src/layouts/*"
+  },
+  "typesVersions": {
+    "*": {
+      "components/blocks": ["src/components/blocks/generated/index.ts"],
+      "components/*": ["src/components/*"],
+      "lib/media": ["src/lib/media.ts"],
+      "lib/*": ["src/lib/*"],
+      "layouts/*": ["src/layouts/*"]
+    }
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@astrojs/cloudflare": "^12.6.12",
+    "@edge-zero/starter-cms": "workspace:*",
+    "@lucide/astro": "^0.577.0",
+    "@payloadcms/richtext-lexical": "3.78.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "astro": "^5.17.2",
+    "daisyui": "^5.5.19",
+    "lucide": "^0.575.0",
+    "payload": "3.78.0",
+    "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.1",
+    "typescript": "^5.9.3"
+  }
+}
