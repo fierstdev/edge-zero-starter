@@ -1,7 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import type { Block } from 'payload';
-import { anchorIdField } from '../../fields/anchorId';
-import { badgeField } from '../../fields/badge';
-import { linkField } from '../../fields/link';
+import { linkField, badgeField, anchorIdField } from '../../public/fields';
 
 export const CTA: Block = {
   slug: 'cta',
@@ -59,7 +59,8 @@ export const CTA: Block = {
     name: 'finePrint',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => ['banner', 'card'].includes(siblingData?.variant),
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        ['banner', 'card'].includes(String(siblingData?.variant || '')),
     },
   },
   {
@@ -67,14 +68,16 @@ export const CTA: Block = {
     type: 'upload',
     relationTo: 'media',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'banner',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'banner',
     },
   },
   {
     name: 'panelTitle',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'split-panel',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'split-panel',
     },
   },
   {
@@ -85,9 +88,10 @@ export const CTA: Block = {
       plural: 'Panel Items',
     },
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'split-panel',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'split-panel',
     },
-    validate: (value, { siblingData }) => {
+    validate: (value: any, { siblingData }: { siblingData?: Record<string, any> | undefined }) => {
       if ((siblingData?.variant || 'banner') === 'split-panel' && (!Array.isArray(value) || value.length === 0)) {
         return 'At least one panel item is required for Split Panel variant.';
       }

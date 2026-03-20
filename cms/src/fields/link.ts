@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import type { Field, GroupField } from 'payload'
 
 // Maps to the ThemeColor + 'outline' | 'link' from atoms.ts

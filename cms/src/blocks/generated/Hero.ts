@@ -1,7 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import type { Block } from 'payload';
-import { anchorIdField } from '../../fields/anchorId';
-import { badgeField } from '../../fields/badge';
-import { linkField } from '../../fields/link';
+import { linkField, badgeField, anchorIdField } from '../../public/fields';
 
 export const Hero: Block = {
   slug: 'hero',
@@ -65,7 +65,8 @@ export const Hero: Block = {
       plural: 'Highlights',
     },
     admin: {
-      condition: (_, siblingData) => ['split', 'diagonal-split', 'cinematic'].includes(siblingData?.variant),
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        ['split', 'diagonal-split', 'cinematic'].includes(String(siblingData?.variant || '')),
     },
     fields: [
       {
@@ -85,10 +86,11 @@ export const Hero: Block = {
     type: 'upload',
     relationTo: 'media',
     admin: {
-      condition: (_, siblingData) => ['split', 'diagonal-split'].includes(siblingData?.variant),
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        ['split', 'diagonal-split'].includes(String(siblingData?.variant || '')),
     },
-    validate: (value, { siblingData }) => {
-      const activeVariant = siblingData?.variant || 'split';
+    validate: (value: any, { siblingData }: { siblingData?: Record<string, any> | undefined }) => {
+      const activeVariant = String(siblingData?.variant || 'split');
       if (['split', 'diagonal-split'].includes(activeVariant) && !value) {
         return 'Media is required for Split and Diagonal Split variants.';
       }
@@ -104,7 +106,8 @@ export const Hero: Block = {
       { label: 'Right', value: 'right' },
     ],
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'split',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'split',
     },
   },
   {
@@ -112,9 +115,10 @@ export const Hero: Block = {
     type: 'upload',
     relationTo: 'media',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'cinematic',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'cinematic',
     },
-    validate: (value, { siblingData }) => {
+    validate: (value: any, { siblingData }: { siblingData?: Record<string, any> | undefined }) => {
       if ((siblingData?.variant || 'split') === 'cinematic' && !value) {
         return 'Background image is required for the Cinematic variant.';
       }
@@ -125,14 +129,16 @@ export const Hero: Block = {
     name: 'panelEyebrow',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'cinematic',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'cinematic',
     },
   },
   {
     name: 'panelStatusText',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'cinematic',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'cinematic',
     },
   },
   {
@@ -145,7 +151,8 @@ export const Hero: Block = {
       { label: 'Dark Text', value: 'dark' },
     ],
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'cinematic',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'cinematic',
       description:
         'Auto detects image brightness behind the content area. Use manual tone when art direction requires it.',
     },
@@ -154,7 +161,8 @@ export const Hero: Block = {
     name: 'diagonalAccentLabel',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'diagonal-split',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'diagonal-split',
     },
   },
 ],

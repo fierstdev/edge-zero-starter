@@ -1,7 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import type { Block } from 'payload';
-import { anchorIdField } from '../../fields/anchorId';
-import { badgeField } from '../../fields/badge';
-import { linkField } from '../../fields/link';
+import { linkField, badgeField, anchorIdField } from '../../public/fields';
 
 export const Pricing: Block = {
   slug: 'pricing',
@@ -47,14 +47,16 @@ export const Pricing: Block = {
     name: 'comparisonFootnote',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'comparison',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'comparison',
     },
   },
   {
     name: 'compactEyebrow',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'compact',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'compact',
     },
   },
   {
@@ -65,7 +67,7 @@ export const Pricing: Block = {
       singular: 'Plan',
       plural: 'Plans',
     },
-    validate: (value, { siblingData }) => {
+    validate: (value: any, { siblingData }: { siblingData?: Record<string, any> | undefined }) => {
       const planCount = Array.isArray(value) ? value.length : 0;
       const activeVariant = siblingData?.variant || 'cards';
 

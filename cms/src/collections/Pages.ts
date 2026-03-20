@@ -1,12 +1,8 @@
-import fs from 'node:fs'
-import path from 'node:path'
-import { pathToFileURL } from 'node:url'
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import type { CollectionConfig } from 'payload'
 import { EdgeZeroBlocks } from '../blocks/generated/index';
 import { hasAdminLevelAccess, isEditorOnly } from '../access/roles'
-
-const enableProBlocks = process.env.EDGE_ZERO_ENABLE_PRO === 'true';
-const proBlocksFilePath = path.resolve(process.cwd(), '../../pro/cms/src/blocks/generated/index.ts');
 
 function mergeBlocksBySlug(blocks: any[]) {
   const blockMap = new Map<string, any>();
@@ -18,23 +14,7 @@ function mergeBlocksBySlug(blocks: any[]) {
   return Array.from(blockMap.values());
 }
 
-let pageBlocks = [...EdgeZeroBlocks];
-
-if (enableProBlocks) {
-  try {
-    if (fs.existsSync(proBlocksFilePath)) {
-      const { tsImport } = (await new Function('return import("tsx/esm/api")')()) as typeof import('tsx/esm/api')
-      const { EdgeZeroBlocks: proBlocks } = (await tsImport(pathToFileURL(proBlocksFilePath).href, import.meta.url)) as {
-        EdgeZeroBlocks: any[];
-      };
-      pageBlocks = mergeBlocksBySlug([...pageBlocks, ...proBlocks]);
-    } else {
-      console.warn(`Edge Zero starter/cms could not find Pro block registry at ${proBlocksFilePath}.`);
-    }
-  } catch (error) {
-    console.warn('Edge Zero starter/cms could not load Pro blocks for development.', error);
-  }
-}
+const pageBlocks = mergeBlocksBySlug([...EdgeZeroBlocks]);
 
 export const Pages: CollectionConfig = {
   slug: 'pages',

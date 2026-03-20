@@ -1,13 +1,16 @@
 ---
-name: Contact Form
-slug: contact-form
-group: Foundation
-tier: starter
-description: A fully working contact form block with split, card, and minimal variants.
----
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
+/// <reference path="./ez-globals.d.ts" />
 
-```ts schema
-[
+const meta = {
+  name: "Contact Form",
+  slug: "contact-form",
+  group: "Foundation",
+  description: "A fully working contact form block with split, card, and minimal variants.",
+};
+
+const schema: EzField[] = [
   anchorIdField,
   {
     name: 'variant',
@@ -38,7 +41,8 @@ description: A fully working contact form block with split, card, and minimal va
     type: 'checkbox',
     defaultValue: true,
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant !== 'minimal',
     },
   },
   {
@@ -46,7 +50,8 @@ description: A fully working contact form block with split, card, and minimal va
     type: 'text',
     defaultValue: 'Contact details',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
@@ -54,14 +59,16 @@ description: A fully working contact form block with split, card, and minimal va
     type: 'text',
     defaultValue: 'Email',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
     name: 'email',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
@@ -69,14 +76,16 @@ description: A fully working contact form block with split, card, and minimal va
     type: 'text',
     defaultValue: 'Phone',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
     name: 'phone',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
@@ -84,14 +93,16 @@ description: A fully working contact form block with split, card, and minimal va
     type: 'text',
     defaultValue: 'Address',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
     name: 'address',
     type: 'textarea',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
@@ -128,7 +139,8 @@ description: A fully working contact form block with split, card, and minimal va
     type: 'text',
     defaultValue: 'Company',
     admin: {
-      condition: (_, siblingData) => siblingData?.includeCompanyField === true,
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.includeCompanyField === true,
     },
   },
   {
@@ -141,7 +153,8 @@ description: A fully working contact form block with split, card, and minimal va
     type: 'text',
     defaultValue: 'Phone',
     admin: {
-      condition: (_, siblingData) => siblingData?.includePhoneField === true,
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.includePhoneField === true,
     },
   },
   {
@@ -154,7 +167,8 @@ description: A fully working contact form block with split, card, and minimal va
     type: 'text',
     defaultValue: 'Subject',
     admin: {
-      condition: (_, siblingData) => siblingData?.includeSubjectField === true,
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.includeSubjectField === true,
     },
   },
   {
@@ -188,10 +202,11 @@ description: A fully working contact form block with split, card, and minimal va
       description: 'Advanced: endpoint that handles form submissions.',
     },
   },
-]
-```
+];
 
-```ts script
+const ez = defineEzBlock({ meta, schema });
+const block = (Astro.props.block ?? Astro.props) as typeof ez.block;
+
 const anchorId = block.anchorId;
 const variant = block.variant || 'split';
 const badge = block.badge;
@@ -237,9 +252,9 @@ const subjectFieldId = `${sectionId}-subject`;
 const messageFieldId = `${sectionId}-message`;
 const consentFieldId = `${sectionId}-consent`;
 const honeypotFieldId = `${sectionId}-hp`;
-```
 
-```astro template
+---
+
 <section id={anchorId || undefined} aria-labelledby={headingId} class="px-4 py-14 sm:py-18">
   <div class="mx-auto max-w-6xl space-y-8">
     <header class="max-w-3xl space-y-4">
@@ -460,4 +475,3 @@ const honeypotFieldId = `${sectionId}-hp`;
     )}
   </div>
 </section>
-```

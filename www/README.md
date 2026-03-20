@@ -5,14 +5,14 @@ This is the static presentation layer of the Edge Zero platform. Constructed wit
 ## Architecture
 
 * **The Router Map**: `src/pages/[...slug].astro` is the singular dynamic routing endpoint. It intercepts all incoming URIs, fetches the `Page` from the starter CMS REST API via the slug, and steps through the generated block map.
-* **The Blocks**: The compiled block renderers live in `src/components/blocks/generated`. If the block renderer encounters a `hero-split` or `AboutBlock` payload shape from the CMS, it resolves the right generated Astro component automatically.
+* **The Blocks**: The compiled block renderers live in `src/components/blocks/generated`. The block renderer resolves each incoming `blockType` from CMS to the correct generated Astro component.
 * **The Theming Protocol**: DaisyUI is baked directly into `src/styles/global.css`. Theme overrides are applied individually to components using the `data-theme` HTML attribute based on instructions passed down from Payload CMS block overrides.
 
 ## The Data Pipeline
 
 1. **Client Request Endpoint**: `[...slug].astro`
 2. **Fetch Logic**: Queries `${PUBLIC_CMS_URL}/api/pages` with `depth=2` to ensure rich media/assets are fully populated up-front.
-3. **Typing**: Exclusively relies on models inside `packages/types/src/blocks.ts` to guarantee runtime synchronization. Never reinvent local interfaces for core block dependencies.
+3. **Typing**: Uses the neutral type facade `@edge-zero/cms-types` for frontend global contracts and CMS data shape alignment.
 
 ## Key Developer Scripts
 - `pnpm dev`: Boots the local hot-reloading Astro server on `localhost:4321`.

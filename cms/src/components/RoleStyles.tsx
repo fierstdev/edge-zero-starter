@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -21,7 +23,7 @@ export const RoleStyles: React.FC = () => {
 
   return (
     <style dangerouslySetInnerHTML={{ __html: `
-      /* Hide Payload 3.0 Add/Remove/Duplicate/Drag blocks controls */
+      /* Hide block structure controls for editor-only users */
       [class*="blocks-field__drawer-toggler"],
       [class*="blocks-field__add-block"],
       [class*="collapsible__drag"],

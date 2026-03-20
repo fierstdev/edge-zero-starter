@@ -1,13 +1,16 @@
 ---
-name: Logos
-slug: logos
-group: Foundation
-tier: starter
-description: One Logos block with grid, strip, and monochrome variants.
----
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
+/// <reference path="./ez-globals.d.ts" />
 
-```ts schema
-[
+const meta = {
+  name: "Logos",
+  slug: "logos",
+  group: "Foundation",
+  description: "One Logos block with grid, strip, and monochrome variants.",
+};
+
+const schema: EzField[] = [
   anchorIdField,
   {
     name: 'variant',
@@ -43,7 +46,8 @@ description: One Logos block with grid, strip, and monochrome variants.
       { label: '6 Columns', value: '6' },
     ],
     admin: {
-      condition: (_, siblingData) => ['grid', 'monochrome'].includes(siblingData?.variant),
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        ['grid', 'monochrome'].includes(String(siblingData?.variant || '')),
     },
   },
   {
@@ -56,7 +60,8 @@ description: One Logos block with grid, strip, and monochrome variants.
       { label: 'Large', value: 'lg' },
     ],
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'strip',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'strip',
     },
   },
   {
@@ -67,7 +72,7 @@ description: One Logos block with grid, strip, and monochrome variants.
       singular: 'Logo',
       plural: 'Logos',
     },
-    validate: (value) => {
+    validate: (value: any) => {
       if (!Array.isArray(value) || value.length === 0) {
         return 'Add at least one logo.';
       }
@@ -86,10 +91,11 @@ description: One Logos block with grid, strip, and monochrome variants.
       },
     ],
   },
-]
-```
+];
 
-```ts script
+const ez = defineEzBlock({ meta, schema });
+const block = (Astro.props.block ?? Astro.props) as typeof ez.block;
+
 const anchorId = block.anchorId;
 const variant = block.variant || 'grid';
 const heading = block.heading;
@@ -131,9 +137,9 @@ const getLogoLabel = (item: any, index: number) => {
   if (explicitAlt) return explicitAlt;
   return `Partner logo ${index + 1}`;
 };
-```
 
-```astro template
+---
+
 <section id={anchorId || undefined} aria-labelledby={headingId} class="px-4 py-14 sm:py-18">
   <div class="mx-auto max-w-6xl space-y-8">
     <header class="max-w-3xl space-y-3">
@@ -256,4 +262,3 @@ const getLogoLabel = (item: any, index: number) => {
     )}
   </div>
 </section>
-```

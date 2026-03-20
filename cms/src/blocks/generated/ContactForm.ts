@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import type { Block } from 'payload';
-import { anchorIdField } from '../../fields/anchorId';
-import { badgeField } from '../../fields/badge';
+import { badgeField, anchorIdField } from '../../public/fields';
 
 export const ContactForm: Block = {
   slug: 'contact-form',
@@ -43,7 +44,8 @@ export const ContactForm: Block = {
     type: 'checkbox',
     defaultValue: true,
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant !== 'minimal',
     },
   },
   {
@@ -51,7 +53,8 @@ export const ContactForm: Block = {
     type: 'text',
     defaultValue: 'Contact details',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
@@ -59,14 +62,16 @@ export const ContactForm: Block = {
     type: 'text',
     defaultValue: 'Email',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
     name: 'email',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
@@ -74,14 +79,16 @@ export const ContactForm: Block = {
     type: 'text',
     defaultValue: 'Phone',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
     name: 'phone',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
@@ -89,14 +96,16 @@ export const ContactForm: Block = {
     type: 'text',
     defaultValue: 'Address',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
     name: 'address',
     type: 'textarea',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant !== 'minimal' && siblingData?.showContactDetails !== false,
     },
   },
   {
@@ -133,7 +142,8 @@ export const ContactForm: Block = {
     type: 'text',
     defaultValue: 'Company',
     admin: {
-      condition: (_, siblingData) => siblingData?.includeCompanyField === true,
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.includeCompanyField === true,
     },
   },
   {
@@ -146,7 +156,8 @@ export const ContactForm: Block = {
     type: 'text',
     defaultValue: 'Phone',
     admin: {
-      condition: (_, siblingData) => siblingData?.includePhoneField === true,
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.includePhoneField === true,
     },
   },
   {
@@ -159,7 +170,8 @@ export const ContactForm: Block = {
     type: 'text',
     defaultValue: 'Subject',
     admin: {
-      condition: (_, siblingData) => siblingData?.includeSubjectField === true,
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.includeSubjectField === true,
     },
   },
   {

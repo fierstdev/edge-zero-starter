@@ -1,4 +1,6 @@
 ---
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import { BlockMap as StarterBlockMap } from './blocks/generated/index.js';
 
 interface Props {
@@ -7,15 +9,18 @@ interface Props {
 
 const { blocks = [] } = Astro.props;
 const enableProBlocks = import.meta.env.PUBLIC_EDGE_ZERO_ENABLE_PRO === 'true';
+const proBlockMapImportPath = import.meta.env.PUBLIC_EDGE_ZERO_PRO_BLOCKMAP_IMPORT;
 
 let proBlockMap: Record<string, any> = {};
 
-if (enableProBlocks) {
+if (enableProBlocks && proBlockMapImportPath) {
   try {
-    ({ BlockMap: proBlockMap } = await import('../../../../pro/www/src/components/blocks/generated/index'));
+    ({ BlockMap: proBlockMap } = await import(/* @vite-ignore */ proBlockMapImportPath));
   } catch (error) {
     console.warn('Edge Zero starter/www could not load Pro blocks for development.', error);
   }
+} else if (enableProBlocks) {
+  console.warn('Edge Zero starter/www: PUBLIC_EDGE_ZERO_PRO_BLOCKMAP_IMPORT is not set; skipping Pro block map.');
 }
 
 const BlockMap = {

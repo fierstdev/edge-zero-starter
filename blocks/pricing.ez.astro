@@ -1,13 +1,16 @@
 ---
-name: Pricing
-slug: pricing
-group: Foundation
-tier: starter
-description: One Pricing block with card, comparison, and compact variants.
----
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
+/// <reference path="./ez-globals.d.ts" />
 
-```ts schema
-[
+const meta = {
+  name: "Pricing",
+  slug: "pricing",
+  group: "Foundation",
+  description: "One Pricing block with card, comparison, and compact variants.",
+};
+
+const schema: EzField[] = [
   anchorIdField,
   {
     name: 'variant',
@@ -41,14 +44,16 @@ description: One Pricing block with card, comparison, and compact variants.
     name: 'comparisonFootnote',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'comparison',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'comparison',
     },
   },
   {
     name: 'compactEyebrow',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'compact',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'compact',
     },
   },
   {
@@ -59,7 +64,7 @@ description: One Pricing block with card, comparison, and compact variants.
       singular: 'Plan',
       plural: 'Plans',
     },
-    validate: (value, { siblingData }) => {
+    validate: (value: any, { siblingData }: { siblingData?: EzSiblingData }) => {
       const planCount = Array.isArray(value) ? value.length : 0;
       const activeVariant = siblingData?.variant || 'cards';
 
@@ -133,10 +138,11 @@ description: One Pricing block with card, comparison, and compact variants.
       },
     ],
   },
-]
-```
+];
 
-```ts script
+const ez = defineEzBlock({ meta, schema });
+const block = (Astro.props.block ?? Astro.props) as typeof ez.block;
+
 const anchorId = block.anchorId;
 const variant = block.variant || 'cards';
 const badge = block.badge;
@@ -179,9 +185,9 @@ const toButtonClass = (action?: any, highlighted?: boolean, isCompact?: boolean)
   const sizeClass = action?.size ? `btn-${action.size}` : isCompact ? 'btn-sm' : 'btn-md';
   return `btn ${styleClass} ${sizeClass} ${isCompact ? '' : 'btn-block'}`.trim();
 };
-```
 
-```astro template
+---
+
 <section id={anchorId || undefined} aria-labelledby={headingId} class="px-4 py-14 sm:py-18 lg:py-22">
   <div class="mx-auto max-w-6xl space-y-8">
     <header class="max-w-3xl space-y-4">
@@ -366,4 +372,3 @@ const toButtonClass = (action?: any, highlighted?: boolean, isCompact?: boolean)
     )}
   </div>
 </section>
-```

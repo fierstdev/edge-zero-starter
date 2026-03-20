@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
+
 const DEFAULT_CMS_URL = 'http://localhost:3000';
 const DEFAULT_CMS_TIMEOUT_MS = 2500;
 const DEFAULT_GLOBAL_CACHE_TTL_MS = import.meta.env.DEV ? 0 : 30000;

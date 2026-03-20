@@ -16,10 +16,10 @@ SQLite imposes a hard limit of 63 characters on internal table and column names.
 Example: `dbName: 'blk_testimonial'`
 
 ### 2. The Types Bridge
-The backend schemas must perfectly reflect the interfaces defined in `packages/types`. If you add a new field, you must:
-1. Update `packages/types/src/blocks.ts`
-2. Update the Payload schema.
-3. Run `pnpm generate:types` from this directory to synchronize `src/payload-types.ts`.
+The backend schemas are the source of truth for generated CMS runtime types. If you add a new field, you must:
+1. Update the Payload schema.
+2. Run `pnpm generate:types` from this directory to synchronize `src/payload-types.ts`.
+3. Ensure frontend consumers use the updated generated types via `@edge-zero/cms-types` where needed.
 
 ## Available Scripts
 

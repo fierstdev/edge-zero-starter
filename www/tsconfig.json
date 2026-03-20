@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "jsx": "preserve",
@@ -9,7 +9,8 @@
     "allowJs": true,
     "noEmit": true,
     "paths": {
-      "@edge-zero/types": ["../../packages/types/src/index.ts"]
+      "@edge-zero/cms-types": ["../types/src/index.ts"],
+      "@edge-zero/cms/payload-types": ["../cms/src/payload-types.ts"]
     }
   },
   "include": [

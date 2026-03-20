@@ -1,5 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import type { Block } from 'payload';
-import { anchorIdField } from '../../fields/anchorId';
+import { anchorIdField } from '../../public/fields';
 
 export const Stats: Block = {
   slug: 'stats',
@@ -39,7 +41,8 @@ export const Stats: Block = {
     name: 'spotlightLabel',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'spotlight',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'spotlight',
     },
   },
   {
@@ -50,7 +53,7 @@ export const Stats: Block = {
       singular: 'Metric',
       plural: 'Metrics',
     },
-    validate: (value, { siblingData }) => {
+    validate: (value: any, { siblingData }: { siblingData?: Record<string, any> | undefined }) => {
       const count = Array.isArray(value) ? value.length : 0;
       const activeVariant = siblingData?.variant || 'band';
 

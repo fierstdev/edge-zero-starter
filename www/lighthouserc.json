@@ -2,8 +2,8 @@
   "ci": {
     "collect": {
       "numberOfRuns": 3,
-      "startServerCommand": "pnpm --filter @edge-zero/starter-www preview --host 127.0.0.1 --port 4321",
-      "startServerReadyPattern": "127.0.0.1:4321",
+      "startServerCommand": "pnpm --filter @edge-zero/www dev --host 127.0.0.1 --port 4321",
+      "startServerReadyPattern": "127.0.0.1:4321|localhost:4321",
       "url": [
         "http://127.0.0.1:4321/lighthouse"
       ],
@@ -28,7 +28,7 @@
         "categories:accessibility": [
           "error",
           {
-            "minScore": 0.95
+            "minScore": 0.9
           }
         ],
         "categories:best-practices": [

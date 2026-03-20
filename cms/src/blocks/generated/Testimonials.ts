@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import type { Block } from 'payload';
-import { anchorIdField } from '../../fields/anchorId';
-import { badgeField } from '../../fields/badge';
+import { badgeField, anchorIdField } from '../../public/fields';
 
 export const Testimonials: Block = {
   slug: 'testimonials',
@@ -42,7 +43,8 @@ export const Testimonials: Block = {
     name: 'featuredEyebrow',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'featured',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'featured',
     },
   },
   {
@@ -53,7 +55,7 @@ export const Testimonials: Block = {
       singular: 'Testimonial',
       plural: 'Testimonials',
     },
-    validate: (value) => {
+    validate: (value: any) => {
       if (!Array.isArray(value) || value.length === 0) {
         return 'Add at least one testimonial.';
       }

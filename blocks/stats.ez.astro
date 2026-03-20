@@ -1,13 +1,16 @@
 ---
-name: Stats
-slug: stats
-group: Foundation
-tier: starter
-description: One Stats block with band, grid, and spotlight variants.
----
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
+/// <reference path="./ez-globals.d.ts" />
 
-```ts schema
-[
+const meta = {
+  name: "Stats",
+  slug: "stats",
+  group: "Foundation",
+  description: "One Stats block with band, grid, and spotlight variants.",
+};
+
+const schema: EzField[] = [
   anchorIdField,
   {
     name: 'variant',
@@ -35,7 +38,8 @@ description: One Stats block with band, grid, and spotlight variants.
     name: 'spotlightLabel',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'spotlight',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'spotlight',
     },
   },
   {
@@ -46,7 +50,7 @@ description: One Stats block with band, grid, and spotlight variants.
       singular: 'Metric',
       plural: 'Metrics',
     },
-    validate: (value, { siblingData }) => {
+    validate: (value: any, { siblingData }: { siblingData?: EzSiblingData }) => {
       const count = Array.isArray(value) ? value.length : 0;
       const activeVariant = siblingData?.variant || 'band';
 
@@ -77,10 +81,11 @@ description: One Stats block with band, grid, and spotlight variants.
       },
     ],
   },
-]
-```
+];
 
-```ts script
+const ez = defineEzBlock({ meta, schema });
+const block = (Astro.props.block ?? Astro.props) as typeof ez.block;
+
 const anchorId = block.anchorId;
 const variant = block.variant || 'band';
 const heading = block.heading;
@@ -92,9 +97,9 @@ const sectionId = anchorId || `${block?.id || 'stats'}-section`;
 const headingId = `${sectionId}-heading`;
 const statItems = Array.isArray(items) ? items : [];
 const [primaryStat, ...secondaryStats] = statItems;
-```
 
-```astro template
+---
+
 <section id={anchorId || undefined} aria-labelledby={headingId} class="px-4 py-12 sm:py-16">
   <div class="mx-auto max-w-6xl space-y-8">
     {(heading || subheading) && (
@@ -160,4 +165,3 @@ const [primaryStat, ...secondaryStats] = statItems;
     )}
   </div>
 </section>
-```

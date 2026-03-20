@@ -1,13 +1,16 @@
 ---
-name: Testimonials
-slug: testimonials
-group: Foundation
-tier: starter
-description: One Testimonials block with grid, featured, and stacked variants.
----
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
+/// <reference path="./ez-globals.d.ts" />
 
-```ts schema
-[
+const meta = {
+  name: "Testimonials",
+  slug: "testimonials",
+  group: "Foundation",
+  description: "One Testimonials block with grid, featured, and stacked variants.",
+};
+
+const schema: EzField[] = [
   anchorIdField,
   {
     name: 'variant',
@@ -37,7 +40,8 @@ description: One Testimonials block with grid, featured, and stacked variants.
     name: 'featuredEyebrow',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'featured',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'featured',
     },
   },
   {
@@ -48,7 +52,7 @@ description: One Testimonials block with grid, featured, and stacked variants.
       singular: 'Testimonial',
       plural: 'Testimonials',
     },
-    validate: (value) => {
+    validate: (value: any) => {
       if (!Array.isArray(value) || value.length === 0) {
         return 'Add at least one testimonial.';
       }
@@ -87,10 +91,11 @@ description: One Testimonials block with grid, featured, and stacked variants.
       },
     ],
   },
-]
-```
+];
 
-```ts script
+const ez = defineEzBlock({ meta, schema });
+const block = (Astro.props.block ?? Astro.props) as typeof ez.block;
+
 const anchorId = block.anchorId;
 const variant = block.variant || 'grid';
 const badge = block.badge;
@@ -112,9 +117,9 @@ const getImageDimensions = (item: any) => resolveMediaDimensions(item?.authorIma
 const featuredImageUrl = getImageUrl(featuredTestimonial);
 const featuredImageSrcSet = getImageSrcSet(featuredTestimonial);
 const featuredImageDimensions = getImageDimensions(featuredTestimonial);
-```
 
-```astro template
+---
+
 <section id={anchorId || undefined} aria-labelledby={headingId} class="px-4 py-14 sm:py-18">
   <div class="mx-auto max-w-6xl space-y-8">
     <header class="max-w-3xl space-y-4">
@@ -286,4 +291,3 @@ const featuredImageDimensions = getImageDimensions(featuredTestimonial);
     )}
   </div>
 </section>
-```

@@ -1,5 +1,7 @@
 ---
-import type { GlobalHeader, SiteIdentity } from '@edge-zero/types';
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
+import type { GlobalHeader, SiteIdentity } from '@edge-zero/cms-types';
 import { fetchGlobal, resolveCmsUrl } from '../../lib/cms';
 
 interface Props {
@@ -24,10 +26,12 @@ const isSticky = headerData?.isSticky ?? true;
 const theme = headerData?.themeOverride;
 
 const siteName = identityData?.siteName || 'Edge Zero';
-const rawLogoUrl = identityData?.logoLight?.url; 
+const logoMedia =
+  identityData?.logoLight && typeof identityData.logoLight === 'object' ? identityData.logoLight : null;
+const rawLogoUrl = logoMedia?.url || undefined;
 const logoUrl = resolveCmsUrl(rawLogoUrl);
-const logoWidth = identityData?.logoLight?.width || undefined;
-const logoHeight = identityData?.logoLight?.height || undefined;
+const logoWidth = logoMedia?.width || undefined;
+const logoHeight = logoMedia?.height || undefined;
 
 const getItemLabel = (item: any) => {
   const label = String(item?.label || '').trim();
@@ -38,6 +42,7 @@ const getItemLabel = (item: any) => {
 
 const getItemTarget = (item: any) => (item?.target === '_blank' ? '_blank' : undefined);
 const getItemRel = (item: any) => (item?.target === '_blank' ? 'noreferrer noopener' : undefined);
+const logoFetchPriorityAttrs = { fetchpriority: 'high' } as Record<string, string>;
 ---
 
 {/* The sticky class keeps the navbar pinned to the top as the user scrolls */}
@@ -99,7 +104,7 @@ const getItemRel = (item: any) => (item?.target === '_blank' ? 'noreferrer noope
           width={logoWidth}
           height={logoHeight}
           decoding="async"
-          fetchpriority="high"
+          {...logoFetchPriorityAttrs}
         />
       ) : (
         siteName

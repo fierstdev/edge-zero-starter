@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import type { GlobalConfig } from 'payload'
 import { navItemFields } from '../fields/navItem'
 import { linkField } from '../fields/link'

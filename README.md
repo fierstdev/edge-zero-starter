@@ -1,46 +1,49 @@
-# Edge Zero
+# Edge Zero Starter
 
-Edge Zero is a starter-first monorepo for building Cloudflare-native sites with **Payload CMS**, **Astro**, **D1**, and **R2**.
+Edge Zero Starter is the public scaffold for building Cloudflare-native sites with Payload CMS and Astro.
 
-The official scaffold lives in:
+## Included Workspaces
 
-- `starter/cms`: the canonical headless CMS
-- `starter/www`: the canonical frontend
-- `packages/types`: the shared contracts
-- `pro/*`: optional commercial extensions layered on top of the starter
+- `cms`: Payload CMS app for content, media, globals, and page blocks
+- `types`: neutral type facade (`@edge-zero/cms-types`) re-exporting generated CMS contracts
+- `www`: Astro frontend that renders pages from CMS content
+- `blocks`: `.ez.astro` source blocks used to generate CMS + WWW block artifacts
 
-## Getting Started
+## Quick Start
 
 ```bash
 pnpm install
-cp starter/cms/.env.example starter/cms/.env
-cp starter/www/.env.example starter/www/.env
-pnpm dev:cms
-pnpm dev:www
+cp cms/.env.example cms/.env
+cp www/.env.example www/.env
+pnpm --filter @edge-zero/cms dev
+pnpm --filter @edge-zero/www dev
 ```
 
 - CMS admin: `http://localhost:3000/admin`
 - Frontend: `http://localhost:4321`
 
-## Architecture
+## Standalone + Self-Hostable
 
-Edge Zero is organized around a control-plane / data-plane split:
+This starter is intentionally standalone. It does not require private `platform/`, `pro/`, or `packages/` workspaces from the Edge Zero monorepo.
 
-1. `packages/*` contains the neutral shared contract layer used across the repo.
-2. `platform/*` contains the control-plane tooling, dashboard, CLI, compiler, and API.
-3. `starter/*` is the productized scaffold that every generated Edge Zero project should start from.
-4. `pro/*` extends the starter with licensed blocks and features.
+A baseline production smoke can be run with:
 
-`starter/www` talks to `starter/cms` over HTTP, which keeps the generated project shape aligned with real deployment on Cloudflare.
+```bash
+pnpm install
+cp cms/.env.example cms/.env
+cp www/.env.example www/.env
+pnpm --filter @edge-zero/cms generate:types
+pnpm --filter @edge-zero/cms build
+pnpm --filter @edge-zero/www build
+```
 
-## Cloudflare Path
+You can then self-host:
 
-The starter scaffold is designed to work like this:
+- `cms` on your own Node runtime or Cloudflare-compatible setup.
+- `www` on Cloudflare Pages or any platform that supports Astro server output.
 
-- Local fallback: SQLite for the CMS
-- Cloudflare runtime: D1 for structured data and R2 for uploaded media
-- Astro frontend: deployed with the Cloudflare adapter
+## Notes
 
-## Core Rule
-
-If a feature is meant to exist in every Edge Zero project, it should be implemented in `starter/*` first. Dogfooding sites should be generated from that scaffold and extended from there.
+- Treat generated block files as build artifacts; edit source files in `blocks/`.
+- Local development uses SQLite by default. Cloudflare D1/R2 are used in cloud environments.
+- Licensing files for this starter are included at the root: `LICENSE`, `NOTICE`, `THIRD_PARTY_NOTICES.md`, and `CONTRIBUTING.md`.

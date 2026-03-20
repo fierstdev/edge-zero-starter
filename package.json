@@ -1,0 +1,14 @@
+{
+  "name": "edge-zero-starter",
+  "private": true,
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.30.3",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @edge-zero/cms --filter @edge-zero/www dev",
+    "dev:cms": "pnpm --filter @edge-zero/cms dev",
+    "dev:www": "pnpm --filter @edge-zero/www dev",
+    "build": "pnpm --filter @edge-zero/www build",
+    "check": "pnpm --filter @edge-zero/www check",
+    "generate:types": "pnpm --filter @edge-zero/cms generate:types"
+  }
+}

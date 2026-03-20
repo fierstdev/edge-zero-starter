@@ -1,5 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import type { Block } from 'payload';
-import { anchorIdField } from '../../fields/anchorId';
+import { anchorIdField } from '../../public/fields';
 
 export const Logos: Block = {
   slug: 'logos',
@@ -47,7 +49,8 @@ export const Logos: Block = {
       { label: '6 Columns', value: '6' },
     ],
     admin: {
-      condition: (_, siblingData) => ['grid', 'monochrome'].includes(siblingData?.variant),
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        ['grid', 'monochrome'].includes(String(siblingData?.variant || '')),
     },
   },
   {
@@ -60,7 +63,8 @@ export const Logos: Block = {
       { label: 'Large', value: 'lg' },
     ],
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'strip',
+      condition: (_data: Record<string, any> | undefined, siblingData: Record<string, any> | undefined) =>
+        siblingData?.variant === 'strip',
     },
   },
   {
@@ -71,7 +75,7 @@ export const Logos: Block = {
       singular: 'Logo',
       plural: 'Logos',
     },
-    validate: (value) => {
+    validate: (value: any) => {
       if (!Array.isArray(value) || value.length === 0) {
         return 'Add at least one logo.';
       }

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import { convertLexicalToHTML, defaultHTMLConverters } from '@payloadcms/richtext-lexical/html';
 
 const data = {

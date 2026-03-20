@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import { headers as getHeaders } from 'next/headers.js'
 import Image from 'next/image'
 import { getPayload } from 'payload'

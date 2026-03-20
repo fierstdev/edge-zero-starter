@@ -1,0 +1,22 @@
+{
+  "name": "@edge-zero/cms-types",
+  "version": "1.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": ["src/index.ts"]
+    }
+  },
+  "dependencies": {
+    "@edge-zero/cms": "workspace:*"
+  }
+}

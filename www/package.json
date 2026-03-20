@@ -1,11 +1,15 @@
 {
-  "name": "@edge-zero/starter-www",
+  "name": "@edge-zero/www",
   "version": "1.0.0",
+  "private": true,
+  "license": "Apache-2.0",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./components/blocks": "./src/components/blocks/generated/index.ts",
     "./components/*": "./src/components/*",
+    "./media": "./src/public/media.ts",
+    "./ui": "./src/public/ui.ts",
     "./lib/media": "./src/lib/media.ts",
     "./lib/*": "./src/lib/*",
     "./layouts/*": "./src/layouts/*"
@@ -14,6 +18,8 @@
     "*": {
       "components/blocks": ["src/components/blocks/generated/index.ts"],
       "components/*": ["src/components/*"],
+      "media": ["src/public/media.ts"],
+      "ui": ["src/public/ui.ts"],
       "lib/media": ["src/lib/media.ts"],
       "lib/*": ["src/lib/*"],
       "layouts/*": ["src/layouts/*"]
@@ -29,7 +35,7 @@
   "dependencies": {
     "@astrojs/check": "^0.9.6",
     "@astrojs/cloudflare": "^12.6.12",
-    "@edge-zero/starter-cms": "workspace:*",
+    "@edge-zero/cms-types": "workspace:*",
     "@lucide/astro": "^0.577.0",
     "@payloadcms/richtext-lexical": "3.78.0",
     "@tailwindcss/typography": "^0.5.19",

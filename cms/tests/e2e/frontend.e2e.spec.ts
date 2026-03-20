@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
 import { test, expect, Page } from '@playwright/test'
 
 test.describe('Frontend', () => {

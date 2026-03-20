@@ -1,13 +1,16 @@
 ---
-name: Hero
-slug: hero
-group: Foundation
-tier: starter
-description: One Hero block with multiple visual variants and CMS-smart conditional fields.
----
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
+/// <reference path="./ez-globals.d.ts" />
 
-```ts schema
-[
+const meta = {
+  name: "Hero",
+  slug: "hero",
+  group: "Foundation",
+  description: "One Hero block with multiple visual variants and CMS-smart conditional fields.",
+};
+
+const schema: EzField[] = [
   anchorIdField,
   {
     name: 'variant',
@@ -59,7 +62,8 @@ description: One Hero block with multiple visual variants and CMS-smart conditio
       plural: 'Highlights',
     },
     admin: {
-      condition: (_, siblingData) => ['split', 'diagonal-split', 'cinematic'].includes(siblingData?.variant),
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        ['split', 'diagonal-split', 'cinematic'].includes(String(siblingData?.variant || '')),
     },
     fields: [
       {
@@ -79,10 +83,11 @@ description: One Hero block with multiple visual variants and CMS-smart conditio
     type: 'upload',
     relationTo: 'media',
     admin: {
-      condition: (_, siblingData) => ['split', 'diagonal-split'].includes(siblingData?.variant),
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        ['split', 'diagonal-split'].includes(String(siblingData?.variant || '')),
     },
-    validate: (value, { siblingData }) => {
-      const activeVariant = siblingData?.variant || 'split';
+    validate: (value: any, { siblingData }: { siblingData?: EzSiblingData }) => {
+      const activeVariant = String(siblingData?.variant || 'split');
       if (['split', 'diagonal-split'].includes(activeVariant) && !value) {
         return 'Media is required for Split and Diagonal Split variants.';
       }
@@ -98,7 +103,8 @@ description: One Hero block with multiple visual variants and CMS-smart conditio
       { label: 'Right', value: 'right' },
     ],
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'split',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'split',
     },
   },
   {
@@ -106,9 +112,10 @@ description: One Hero block with multiple visual variants and CMS-smart conditio
     type: 'upload',
     relationTo: 'media',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'cinematic',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'cinematic',
     },
-    validate: (value, { siblingData }) => {
+    validate: (value: any, { siblingData }: { siblingData?: EzSiblingData }) => {
       if ((siblingData?.variant || 'split') === 'cinematic' && !value) {
         return 'Background image is required for the Cinematic variant.';
       }
@@ -119,14 +126,16 @@ description: One Hero block with multiple visual variants and CMS-smart conditio
     name: 'panelEyebrow',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'cinematic',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'cinematic',
     },
   },
   {
     name: 'panelStatusText',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'cinematic',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'cinematic',
     },
   },
   {
@@ -139,7 +148,8 @@ description: One Hero block with multiple visual variants and CMS-smart conditio
       { label: 'Dark Text', value: 'dark' },
     ],
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'cinematic',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'cinematic',
       description:
         'Auto detects image brightness behind the content area. Use manual tone when art direction requires it.',
     },
@@ -148,13 +158,15 @@ description: One Hero block with multiple visual variants and CMS-smart conditio
     name: 'diagonalAccentLabel',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'diagonal-split',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'diagonal-split',
     },
   },
-]
-```
+];
 
-```ts script
+const ez = defineEzBlock({ meta, schema });
+const block = (Astro.props.block ?? Astro.props) as typeof ez.block;
+
 const anchorId = block.anchorId;
 const variant = block.variant || 'split';
 const badge = block.badge;
@@ -205,9 +217,10 @@ const toButtonClass = (action?: any) => {
   const sizeClass = action?.size ? `btn-${action.size}` : 'btn-md';
   return `btn ${styleClass} ${sizeClass} w-full sm:w-auto`;
 };
-```
+const mediaFetchPriorityAttrs = (isPriorityMedia ? { fetchpriority: 'high' } : {}) as any;
 
-```astro template
+---
+
 <section id={anchorId || undefined} aria-labelledby={headingId} class={sectionClasses}>
   <div class={containerClasses}>
     {variant === 'split' && (
@@ -222,9 +235,9 @@ const toButtonClass = (action?: any) => {
                 src={splitMediaUrl}
                 srcset={splitMediaSrcSet}
                 alt={media?.altText || ''}
-                class="w-full rounded-box object-cover aspect-[4/3]"
+                class="w-full rounded-box object-cover aspect-4/3"
                 loading={isPriorityMedia ? 'eager' : 'lazy'}
-                fetchpriority={isPriorityMedia ? 'high' : 'auto'}
+                {...mediaFetchPriorityAttrs}
                 decoding="async"
                 width={splitMediaDimensions.width || undefined}
                 height={splitMediaDimensions.height || undefined}
@@ -351,7 +364,7 @@ const toButtonClass = (action?: any) => {
             alt={backgroundImage?.altText || ''}
             class="absolute inset-0 h-full w-full object-cover"
             loading={isPriorityMedia ? 'eager' : 'lazy'}
-            fetchpriority={isPriorityMedia ? 'high' : 'auto'}
+            {...mediaFetchPriorityAttrs}
             decoding="async"
             width={cinematicMediaDimensions.width || undefined}
             height={cinematicMediaDimensions.height || undefined}
@@ -543,7 +556,7 @@ const toButtonClass = (action?: any) => {
               alt={media?.altText || ''}
               class="h-full w-full object-cover"
               loading={isPriorityMedia ? 'eager' : 'lazy'}
-              fetchpriority={isPriorityMedia ? 'high' : 'auto'}
+              {...mediaFetchPriorityAttrs}
               decoding="async"
               width={splitMediaDimensions.width || undefined}
               height={splitMediaDimensions.height || undefined}
@@ -679,4 +692,3 @@ const toButtonClass = (action?: any) => {
     })();
   </script>
 )}
-```

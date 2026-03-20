@@ -1,13 +1,16 @@
 ---
-name: CTA
-slug: cta
-group: Foundation
-tier: starter
-description: One CTA block with variant-driven layouts for banner, card, and split panel.
----
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
+/// <reference path="./ez-globals.d.ts" />
 
-```ts schema
-[
+const meta = {
+  name: "CTA",
+  slug: "cta",
+  group: "Foundation",
+  description: "One CTA block with variant-driven layouts for banner, card, and split panel.",
+};
+
+const schema: EzField[] = [
   anchorIdField,
   {
     name: 'variant',
@@ -53,7 +56,8 @@ description: One CTA block with variant-driven layouts for banner, card, and spl
     name: 'finePrint',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => ['banner', 'card'].includes(siblingData?.variant),
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        ['banner', 'card'].includes(String(siblingData?.variant || '')),
     },
   },
   {
@@ -61,14 +65,16 @@ description: One CTA block with variant-driven layouts for banner, card, and spl
     type: 'upload',
     relationTo: 'media',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'banner',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'banner',
     },
   },
   {
     name: 'panelTitle',
     type: 'text',
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'split-panel',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'split-panel',
     },
   },
   {
@@ -79,9 +85,10 @@ description: One CTA block with variant-driven layouts for banner, card, and spl
       plural: 'Panel Items',
     },
     admin: {
-      condition: (_, siblingData) => siblingData?.variant === 'split-panel',
+      condition: (_data: Record<string, any> | undefined, siblingData: EzSiblingData) =>
+        siblingData?.variant === 'split-panel',
     },
-    validate: (value, { siblingData }) => {
+    validate: (value: any, { siblingData }: { siblingData?: EzSiblingData }) => {
       if ((siblingData?.variant || 'banner') === 'split-panel' && (!Array.isArray(value) || value.length === 0)) {
         return 'At least one panel item is required for Split Panel variant.';
       }
@@ -95,10 +102,11 @@ description: One CTA block with variant-driven layouts for banner, card, and spl
       },
     ],
   },
-]
-```
+];
 
-```ts script
+const ez = defineEzBlock({ meta, schema });
+const block = (Astro.props.block ?? Astro.props) as typeof ez.block;
+
 const anchorId = block.anchorId;
 const variant = block.variant || 'banner';
 const badge = block.badge;
@@ -127,9 +135,10 @@ const toButtonClass = (action?: any, isPrimary?: boolean) => {
   const sizeClass = action?.size ? `btn-${action.size}` : 'btn-md';
   return `btn ${styleClass} ${sizeClass} w-full sm:w-auto`;
 };
-```
+const mediaFetchPriorityAttrs = (isPriorityMedia ? { fetchpriority: 'high' } : {}) as any;
 
-```astro template
+---
+
 <section id={anchorId || undefined} aria-labelledby={headingId} class="px-4 py-14 sm:py-18 lg:py-22">
   <div class="mx-auto max-w-6xl">
     {variant === 'banner' && (
@@ -142,7 +151,7 @@ const toButtonClass = (action?: any, isPrimary?: boolean) => {
               alt={backgroundImage?.altText || ''}
               class="absolute inset-0 h-full w-full object-cover"
               loading={isPriorityMedia ? 'eager' : 'lazy'}
-              fetchpriority={isPriorityMedia ? 'high' : 'auto'}
+              {...mediaFetchPriorityAttrs}
               decoding="async"
               width={backgroundImageDimensions.width || undefined}
               height={backgroundImageDimensions.height || undefined}
@@ -289,4 +298,3 @@ const toButtonClass = (action?: any, isPrimary?: boolean) => {
     )}
   </div>
 </section>
-```
