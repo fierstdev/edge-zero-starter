@@ -28,6 +28,7 @@ apps/backend/payload.db
 .DS_Store
 Thumbs.db
 .cache/
+.npm-cache/
 
 # IDEs
 .idea/
