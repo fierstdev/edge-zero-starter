@@ -1,0 +1,36 @@
+---
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Edge Zero Contributors
+import Layout from '../layouts/Layout.astro';
+import { fetchGlobalBundle } from '../lib/cms';
+
+Astro.response.status = 404;
+const globals = await fetchGlobalBundle();
+---
+
+<Layout
+  seo={{
+    title: 'Page Not Found | Edge Zero',
+    description: 'The page you requested could not be found.',
+    noIndex: true,
+  }}
+  globals={globals}
+>
+  <main class="px-4 py-20 sm:py-24">
+    <section class="mx-auto max-w-3xl rounded-box border border-base-300 bg-base-100 p-8 text-center shadow-sm sm:p-12">
+      <p class="badge badge-ghost">404</p>
+      <h1 class="mt-4 text-4xl font-black tracking-tight sm:text-5xl">Page not found</h1>
+      <p class="mt-4 text-base text-base-content/75 sm:text-lg">
+        The link may be outdated, or the page may have been moved.
+      </p>
+      <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+        <a class="btn btn-primary" href="/">
+          Back to Home
+        </a>
+        <a class="btn btn-outline" href={(import.meta.env.PUBLIC_EDGEZERO_DASHBOARD_URL || 'https://dashboard.edgezero.dev').replace(/\/+$/, '')}>
+          Open Dashboard
+        </a>
+      </div>
+    </section>
+  </main>
+</Layout>

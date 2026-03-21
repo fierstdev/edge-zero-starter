@@ -20,8 +20,27 @@ const [headerData, identityData] = shouldFetchGlobals
   : [providedHeaderData ?? null, providedIdentityData ?? null];
 
 // Fallbacks for the factory floor
-const navItems = headerData?.navigation || [];
-const cta = headerData?.callToAction;
+const dashboardUrl = (import.meta.env.PUBLIC_EDGEZERO_DASHBOARD_URL || 'https://dashboard.edgezero.dev').replace(/\/+$/, '');
+const fallbackNavigation = [
+  { label: 'Platform', url: '/#platform', target: '_self' },
+  { label: 'Results', url: '/#results', target: '_self' },
+  { label: 'Pricing', url: '/#pricing', target: '_self' },
+  { label: 'FAQ', url: '/#faq', target: '_self' },
+  { label: 'Contact', url: '/#contact', target: '_self' },
+];
+const navItems = Array.isArray(headerData?.navigation) && headerData.navigation.length > 0
+  ? headerData.navigation
+  : fallbackNavigation;
+const cta =
+  headerData?.callToAction?.label && headerData?.callToAction?.url
+    ? headerData.callToAction
+    : {
+        label: 'Start Free',
+        url: `${dashboardUrl}/auth/signup?redirect=/`,
+        target: '_self',
+        style: 'primary',
+        size: 'md',
+      };
 const isSticky = headerData?.isSticky ?? true;
 const theme = headerData?.themeOverride;
 
@@ -81,12 +100,7 @@ const logoFetchPriorityAttrs = { fetchpriority: 'high' } as Record<string, strin
                 </ul>
               </details>
             ) : (
-              <a
-                href={item.url}
-                target={getItemTarget(item)}
-                rel={getItemRel(item)}
-                aria-label={getItemLabel(item)}
-              >
+              <a href={item.url} target={getItemTarget(item)} rel={getItemRel(item)} aria-label={getItemLabel(item)}>
                 {getItemLabel(item)}
               </a>
             )}
@@ -136,12 +150,7 @@ const logoFetchPriorityAttrs = { fetchpriority: 'high' } as Record<string, strin
               </ul>
             </details>
           ) : (
-            <a
-              href={item.url}
-              target={getItemTarget(item)}
-              rel={getItemRel(item)}
-              aria-label={getItemLabel(item)}
-            >
+            <a href={item.url} target={getItemTarget(item)} rel={getItemRel(item)} aria-label={getItemLabel(item)}>
               {getItemLabel(item)}
             </a>
           )}
@@ -156,6 +165,7 @@ const logoFetchPriorityAttrs = { fetchpriority: 'high' } as Record<string, strin
       <a 
         href={cta.url} 
         target={cta.target === '_blank' ? '_blank' : undefined}
+        rel={cta.target === '_blank' ? 'noreferrer noopener' : undefined}
         class={`btn btn-${cta.style || 'primary'} ${cta.size ? `btn-${cta.size}` : ''}`}
       >
         {cta.label}
