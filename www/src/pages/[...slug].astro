@@ -30,14 +30,25 @@ const [pageData, globalBundle] = await Promise.all([
 ]);
 
 const resolvedPageData = pageData || (querySlug === 'home' ? buildDefaultHomePage(dashboardUrl) : null);
+const isNotFound = !resolvedPageData;
 
 // 4. Handle 404s
-if (!resolvedPageData) {
+if (isNotFound) {
   Astro.response.status = 404;
-  return Astro.redirect('/404');
 }
 
-const { title, seo, blocks, themeOverride } = resolvedPageData;
+const fallbackNotFoundPage = {
+  title: 'Page Not Found',
+  seo: {
+    title: 'Page Not Found | Edge Zero',
+    description: 'The page you requested could not be found.',
+    noIndex: true,
+  },
+  blocks: [],
+  themeOverride: undefined,
+};
+const activePageData = resolvedPageData || fallbackNotFoundPage;
+const { title, seo, blocks, themeOverride } = activePageData;
 ---
 
 <Layout 
@@ -46,7 +57,27 @@ const { title, seo, blocks, themeOverride } = resolvedPageData;
   globals={globalBundle}
 >
   <main>
-    <h1 class="sr-only">{seo?.title || title}</h1>
-    <BlockRenderer blocks={blocks} />
+    {isNotFound ? (
+      <section class="mx-auto mt-16 max-w-3xl rounded-box border border-base-300 bg-base-100 p-8 text-center shadow-sm sm:mt-24 sm:p-12">
+        <p class="badge badge-ghost">404</p>
+        <h1 class="mt-4 text-4xl font-black tracking-tight sm:text-5xl">Page not found</h1>
+        <p class="mt-4 text-base text-base-content/75 sm:text-lg">
+          The link may be outdated, or the page may have been moved.
+        </p>
+        <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <a class="btn btn-primary" href="/">
+            Back to Home
+          </a>
+          <a class="btn btn-outline" href={dashboardUrl.replace(/\/+$/, '')}>
+            Open Dashboard
+          </a>
+        </div>
+      </section>
+    ) : (
+      <>
+        <h1 class="sr-only">{seo?.title || title}</h1>
+        <BlockRenderer blocks={blocks} />
+      </>
+    )}
   </main>
 </Layout>
